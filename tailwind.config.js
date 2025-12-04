@@ -13,20 +13,27 @@ module.exports = {
                 mono: ['"Space Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
             },
             colors: {
-                // Neon Tech Museum palette
-                primary: '#5B5FFF',        // main action
-                'primary-soft': '#8C52FF', // hover / secondary
-                'primary-dark': '#3D3DF3', // active / focus
+                primary: '#5B5FFF',
+                'primary-hover': '#4A4BF5',
+                'primary-focus': '#7073FF',
+                'primary-active': '#3B3BDB',
+                'primary-100': '#DADAFE',
 
-                accent: '#F25AFF',         // badges, highlights
-
-                background: '#F7F7FB',     // app bg (light)
-                'background-alt': '#EEEFFD',
+                background: '#F7F7FB',
                 'background-dark': '#0F0F1A',
 
-                'text-main': '#111111',    // body text
-                'text-on-dark': '#EAEAF6', // text on dark / buttons
-            },
+                'text-main': '#111111',
+                'text-on-dark': '#EAEAF6',
+
+                // refined white button set
+                'btn-white': '#FFFFFF',
+                'btn-white-hover': '#F8F8FF',
+                'btn-white-active': '#F0F1FF',
+
+                'btn-white-border': '#E5E7FF',
+                'btn-white-border-hover': '#D4D6FF',
+                'btn-white-border-active': '#C1C4FF',
+            }
         },
     },
     plugins: [],

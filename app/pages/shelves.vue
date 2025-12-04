@@ -304,7 +304,7 @@ const imageMap: Record<string, string> = {
                     <p>
                         Dit is de {{ objectMap[visitorObjectId] }} van
                         <span class="font-semibold">
-                      {{ playerName || 'deze bezoeker' }}
+                      {{ playerName }}
                     </span>.
                         Even een foto maken, dan kan ik deze informatie later goed gebruiken!
                     </p>
