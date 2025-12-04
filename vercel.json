@@ -5,12 +5,6 @@
             "src": "/(.*)",
             "dest": "/"
         }
-    ],
-    "rewrites": [
-        {
-            "source": "/v1/:path*",
-            "destination": "https://jouw-version-one-vercel-url.vercel.app/:path*"
-        }
     ]
 }
 
