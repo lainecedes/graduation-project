@@ -12,7 +12,6 @@ export default defineNuxtConfig({
     future: {
         compatibilityVersion: 4,
     },
-
     css: [
         '~/assets/css/tailwind.css',
         '~/assets/css/fonts.css',
