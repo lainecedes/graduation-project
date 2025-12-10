@@ -3,6 +3,11 @@ import { useMuseumSelection } from '@/composables/useMuseumSelection'
 import type { MuseumObjectId } from '~/components/museum/types/museumObjects'
 import { objectLabels } from '~/components/museum/types/museumObjects'
 
+const props = defineProps<{
+    isHeistActive?: boolean
+    isHeistFinished?: boolean
+}>()
+
 const emit = defineEmits<{
     (e: 'object-click', id: MuseumObjectId): void
 }>()
@@ -57,12 +62,15 @@ const handleClick = (id: MuseumObjectId) => {
                 />
 
                 <div
-                    v-if="selectedObjects[index]"
+                    v-if="selectedObjects[index] && !isHeistFinished"
                     class="absolute inset-0 flex items-center justify-center"
                 >
                     <button
                         type="button"
-                        class="relative group flex items-center justify-center"
+                        class="relative group flex items-center justify-center transition-transform transition-opacity"
+                        :class="{
+              'dataheist-steal': isHeistActive,
+            }"
                         @click="handleClick(selectedObjects[index] as MuseumObjectId)"
                     >
                         <img
@@ -85,3 +93,24 @@ const handleClick = (id: MuseumObjectId) => {
         </div>
     </div>
 </template>
+
+<style scoped>
+@keyframes dataheist-steal {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    40% {
+        transform: translateY(-8px) scale(1.05);
+    }
+    100% {
+        transform: translateY(-60px) scale(0.4);
+        opacity: 0;
+    }
+}
+
+.dataheist-steal {
+    animation: dataheist-steal 0.5s ease-in-out forwards;
+    animation-delay: 1s;
+}
+</style>

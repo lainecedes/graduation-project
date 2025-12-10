@@ -15,6 +15,8 @@ export default defineNuxtConfig({
     css: [
         '~/assets/css/tailwind.css',
         '~/assets/css/fonts.css',
+        '~/assets/css/dialog.css',
+
     ],
 
     modules: ['@nuxt/content', '@nuxt/image', '@nuxtjs/tailwindcss'],

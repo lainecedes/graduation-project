@@ -5,11 +5,12 @@ import { usePlayerProfile } from '@/composables/usePlayerProfile'
 import type { MuseumObjectId } from '~/components/museum/types/museumObjects'
 import { objectLabels } from '~/components/museum/types/museumObjects'
 
-import ShelvesGrid from "~/components/museum/ShelvesGrid.vue";
-import VisitorPhotographer from "~/components/museum/VisitorPhotographer.vue";
-import ObjectInfoDialog from "~/components/museum/ObjectInfoDialog.vue";
-import MuseumIntroOverlay from "~/components/museum/MuseumIntroOverlay.vue";
-
+import ShelvesGrid from '~/components/museum/ShelvesGrid.vue'
+import VisitorPhotographer from '~/components/museum/VisitorPhotographer.vue'
+import ObjectInfoDialog from '~/components/museum/ObjectInfoDialog.vue'
+import MuseumIntroOverlay from '~/components/museum/MuseumIntroOverlay.vue'
+import DataHeist from '~/components/museum/DataHeist.vue'
+import BaseButton from "~/components/ui/BaseButton.vue";
 
 const { selectedObjects } = useMuseumSelection()
 const { playerName } = usePlayerProfile()
@@ -22,6 +23,10 @@ const showVisitorBubble = ref(false)
 const showObjectDialog = ref(false)
 const activeObjectId = ref<MuseumObjectId | null>(null)
 const clickedObjects = ref<MuseumObjectId[]>([])
+
+const isHeistActive = ref(false)
+const isHeistFinished = ref(false)
+const showHeistDialog = ref(false)
 
 const visitorObjectId = computed<MuseumObjectId | null>(
     () => (selectedObjects.value[0] as MuseumObjectId | undefined) ?? null,
@@ -53,27 +58,44 @@ const handleCloseDialog = () => {
     showObjectDialog.value = false
 }
 
-const allObjectsViewed = computed(() =>
-    selectedObjects.value.length > 0 &&
-    selectedObjects.value.every((id) => clickedObjects.value.includes(id as MuseumObjectId)),
-)
-
-const goNext = () => {
-    if (!allObjectsViewed.value) return
-    console.log('Alles gezien -> daarna naar eind scene')
-}
-
-
 const viewedCount = computed(() =>
     selectedObjects.value.filter((id) =>
         clickedObjects.value.includes(id as MuseumObjectId),
     ).length,
 )
+
 const totalCount = computed(() => selectedObjects.value.length)
 
 const progressPercent = computed(() =>
     totalCount.value === 0 ? 0 : (viewedCount.value / totalCount.value) * 100,
 )
+
+const allObjectsViewed = computed(() =>
+    selectedObjects.value.length > 0 &&
+    selectedObjects.value.every((id) =>
+        clickedObjects.value.includes(id as MuseumObjectId),
+    ),
+)
+
+// ✅ Verder-knop: opent alleen de DataHeist dialoog
+const handleNextClick = () => {
+    if (!allObjectsViewed.value) return
+    showHeistDialog.value = true
+}
+
+const handleHeistStart = () => {
+    isHeistActive.value = true
+}
+
+const handleHeistFinished = () => {
+    isHeistFinished.value = true
+    // later: router.push('/whatever')
+    console.log('Dataheist klaar -> naar eindscene')
+}
+
+const handleHeistClose = () => {
+    showHeistDialog.value = false
+}
 </script>
 
 <template>
@@ -82,7 +104,6 @@ const progressPercent = computed(() =>
            bg-[linear-gradient(to_top,#cfe7f5_0_35%,#f5f1e6_35%_100%)]
            p-5"
     >
-
         <!-- Voortgangsbalk -->
         <div class="relative z-30 mb-4 max-w-xl">
             <div class="flex items-center justify-between mb-2">
@@ -106,7 +127,11 @@ const progressPercent = computed(() =>
             </p>
         </div>
 
-        <ShelvesGrid @object-click="handleObjectClick" />
+        <ShelvesGrid
+            @object-click="handleObjectClick"
+            :is-heist-active="isHeistActive"
+            :is-heist-finished="isHeistFinished"
+        />
 
         <div class="relative z-30 mt-4">
             <h2 class="mb-4 text-3xl text-primary font-bold">
@@ -114,14 +139,17 @@ const progressPercent = computed(() =>
             </h2>
         </div>
 
-        <button
+        <!-- trigger datalek dialoog -->
+        <div class="fixed bottom-4 right-4 z-30 ">
+        <BaseButton
+            v-if="!showHeistDialog && !isHeistActive"
             type="button"
-            class="fixed bottom-4 right-4 z-30 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 active:translate-y-px transition disabled:opacity-40 disabled:cursor-not-allowed disabled:translate-y-0"
             :disabled="!allObjectsViewed"
-            @click="goNext"
+            @click="handleNextClick"
         >
             Verder
-        </button>
+        </BaseButton>
+        </div>
 
         <MuseumIntroOverlay
             v-if="showIntroOverlay"
@@ -140,6 +168,13 @@ const progressPercent = computed(() =>
             :player-name="playerName"
             :object-name="objectLabels[visitorObjectId]"
             :show-bubble="showVisitorBubble"
+        />
+
+        <DataHeist
+            :open="showHeistDialog"
+            @start="handleHeistStart"
+            @finished="handleHeistFinished"
+            @close="handleHeistClose"
         />
     </section>
 </template>
