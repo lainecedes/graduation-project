@@ -37,13 +37,13 @@ const {
     next,
     reset,
 } = useDialogLines([
-    'Je hebt alles bekeken. Nice.',
+    'Je hebt alles bekeken. Goed gedaan.',
     'Maar heb je ooit gedacht wat er gebeurt als deze gegevens ineens op straat liggen?',
     'Zullen we dat even laten gebeuren in jouw museum?',
 ])
 
 const primaryLabel = computed(() =>
-    isLastLine.value ? 'Start dataheist' : 'Verder',
+    isLastLine.value ? 'Ja, dat wil ik wel zien!' : 'Verder',
 )
 
 watch(
@@ -88,7 +88,7 @@ const handlePrimaryClick = () => {
         >
             <!-- wrapper relatief zodat Locky erboven kan hangen -->
             <div class="dialog-wrap relative w-full">
-                <!-- LOCKY bovenop -->
+                <!-- locky bovenop -->
                 <div
                     v-if="lockySvg"
                     class="locky absolute bottom-[65%] z-30 -left-6 w-40 h-40 pointer-events-none select-none"
@@ -102,11 +102,11 @@ const handlePrimaryClick = () => {
                     :key="step"
                     class="dialog-pop relative w-full max-w-full bg-white shadow-xl px-6 py-8 space-y-4"
                 >
-                    <h3 class="uppercase text-primary text-xs tracking-[0.18em] font-semibold">
+                    <h3 class="uppercase text-primary font-semibold">
                         Locky
                     </h3>
 
-                    <p class="text-text-main text-base">
+                    <p class="text-text-main text-xl">
                         {{ currentLine }}
                     </p>
 

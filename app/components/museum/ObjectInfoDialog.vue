@@ -18,6 +18,8 @@ const handleClose = () => emit('close')
    GEOTAG LOGICA
 ========================= */
 
+/// GEOTAG ALLEEN BESCHIKBAAR ALLEEN VOOR HET A/B TESTEN VOOR USABILITY TEST.
+
 const isGeotag = computed(() => props.id === 'geotag')
 
 const geoLines = [
@@ -171,7 +173,7 @@ onBeforeUnmount(() => {
     <div class="absolute inset-0 z-40 flex items-end justify-center px-4 pb-6">
         <!-- wrapper relatief zodat Locky erboven kan hangen -->
         <div class="dialog-wrap relative w-full max-w-md">
-            <!-- 🔐 LOCKY bovenop (alleen geotag) -->
+            <!-- locky de mascotte -->
             <div
                 v-if="isGeotag && lockySvg"
                 class="locky relative -bottom-[5rem] -right-[20rem] w-40 h-40 pointer-events-none select-none"
@@ -190,7 +192,7 @@ onBeforeUnmount(() => {
                      GEOTAG: TEKST
                 ========================= -->
                 <template v-if="isGeotag && !isVideoStep">
-                    <p class="text-sm text-slate-700">
+                    <p class="text-xl text-slate-700">
                         {{ geoLines[step] }}
                     </p>
 

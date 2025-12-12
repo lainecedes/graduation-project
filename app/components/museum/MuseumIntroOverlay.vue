@@ -21,11 +21,13 @@ const {
     isLastLine,
     next,
 } = useDialogLines([
-    'Je collectie staat klaar.',
-    'Je hebt je spullen neergezet in je datamuseum. Klaar om het te openen en te zien hoe bezoekers reageren?',
+    'Goede keuzes! Dit zijn belangrijke spullen dat heel waardevol zijn!',
+    'In jouw museum liggen ze netjes bij elkaar.',
+    'Maar… niet iedereen gaat even voorzichtig om met spullen van anderen...',
+    'Zullen we kijken wat er gebeurt als je het museum opent?',
 ])
 
-const primaryLabel = computed(() => (isLastLine.value ? 'Open mijn museum' : 'Verder'))
+const primaryLabel = computed(() => (isLastLine.value ? 'Ja, open mijn museum!' : 'Verder'))
 
 const startCountdown = () => {
     if (isCountingDown.value) return
@@ -86,13 +88,19 @@ onMounted(async () => {
                     <div class="locky-svg" v-html="lockySvg" />
                 </div>
 
-                <p class="text-text-main">
+                <h3 class="uppercase text-primary font-semibold">
+                    Locky
+                </h3>
+
+                <p class="text-text-main text-xl">
                     {{ currentLine }}
                 </p>
 
-                <BaseButton type="button" @click="handlePrimaryClick">
-                    {{ primaryLabel }}
-                </BaseButton>
+                <div class="flex justify-end">
+                    <BaseButton type="button" @click="handlePrimaryClick">
+                        {{ primaryLabel }}
+                    </BaseButton>
+                </div>
             </div>
 
             <!-- countdown -->

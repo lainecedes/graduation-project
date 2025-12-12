@@ -125,7 +125,7 @@ onMounted(async () => {
                     :key="step"
                     class="dialog-pop w-full max-w-xl bg-white shadow-xl px-6 py-8 space-y-4"
                 >
-                    <p class="text-text-main">
+                    <p class="text-text-main text-xl">
                         {{ currentLine }}
                     </p>
 
@@ -149,7 +149,7 @@ onMounted(async () => {
             <!-- onder locky -->
             <div class="w-full max-w-md space-y-4">
                 <div class="space-y-2">
-                    <label class="block text-sm font-medium text-slate-800">
+                    <label class="block text-xl font-medium text-slate-800">
                         Jouw naam
                     </label>
 
@@ -183,7 +183,7 @@ onMounted(async () => {
             </h2>
 
             <div class="w-full max-w-xl space-y-4">
-                <p class="text-text-main/80 text-center">
+                <p class="mt-[2rem] text-text-main text-xl text-center">
                     Zo kunnen we het museum beter laten aansluiten bij jouw leeftijd.
                 </p>
 
