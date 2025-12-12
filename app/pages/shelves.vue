@@ -29,7 +29,7 @@ const isHeistActive = ref(false)
 const isHeistFinished = ref(false)
 const showHeistDialog = ref(false)
 
-// ✅ alleen de objecten die in deze versie bestaan
+// alleen de objecten die in deze versie bestaan
 const VALID_OBJECT_IDS: MuseumObjectId[] = [
     'chat',
     'passport',
@@ -38,14 +38,13 @@ const VALID_OBJECT_IDS: MuseumObjectId[] = [
     'profile',
 ]
 
-// ✅ gefilterde selectie op basis van geldige IDs
+// gefilterde selectie op basis van geldige IDs
 const filteredSelected = computed<MuseumObjectId[]>(() =>
     selectedObjects.value.filter((id): id is MuseumObjectId =>
         VALID_OBJECT_IDS.includes(id as MuseumObjectId),
     ),
 )
 
-// oude IDs weghalen op zodra je het scherm binnenkomt
 onMounted(() => {
     selectedObjects.value = [...filteredSelected.value]
 })
@@ -64,7 +63,7 @@ const handleMuseumOpened = () => {
 
     window.setTimeout(() => {
         showVisitorBubble.value = false
-    }, 3000)
+    }, 10000)
 }
 
 const handleObjectClick = (id: MuseumObjectId) => {
@@ -215,6 +214,6 @@ const handleHeistClose = () => {
 }
 
 .animate-visitor-walk {
-    animation: visitor-walk 0.7s ease-out forwards;
+    animation: visitor-walk 1.5s ease-out forwards;
 }
 </style>

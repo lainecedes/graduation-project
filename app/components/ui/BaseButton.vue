@@ -1,5 +1,4 @@
 <!-- components/ui/BaseButton.vue -->
-<!-- components/ui/BaseButton.vue -->
 <script setup lang="ts">
 const props = withDefaults(
     defineProps<{
@@ -8,7 +7,7 @@ const props = withDefaults(
         type?: 'button' | 'submit' | 'reset'
         fullWidth?: boolean
         disabled?: boolean
-        pressed?: boolean      // 👈 nieuw
+        pressed?: boolean
     }>(),
     {
         variant: 'primary',

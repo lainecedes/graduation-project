@@ -13,9 +13,10 @@ const phase = ref<'intro' | 'name' | 'age'>('intro')
 
 // intro dialog lines
 const { step, currentLine, isLastLine, next } = useDialogLines([
-    'Psst… ik ben Locky.',
-    'Ik pas op jouw spullen in dit datamuseum.',
-    'Eerst jouw naam, dan gaan we beginnen.',
+    'Dit is jouw datamuseum.',
+    'Hier zie je hoe persoonlijke gegevens online worden gebruikt.',
+    'Je ontdekt wat de gevolgen daarvan kunnen zijn.',
+    'We beginnen met je naam, zodat dit museum echt van jou is.',
 ])
 
 const handleIntroNext = () => {
@@ -54,46 +55,16 @@ const handleAgeNext = () => {
     if (!selectedAgeGroup.value) return
     router.push('/choose')
 }
-
-// locky svg inline
-const lockySvg = ref('')
-
-onMounted(async () => {
-    try {
-        const res = await fetch('/mascotte/locky.svg')
-        lockySvg.value = await res.text()
-    } catch {
-        lockySvg.value = ''
-    }
-})
 </script>
 
 <template>
-    <main class="relative min-h-screen bg-background-alt overflow-hidden">
-        <!-- LOCKY (gecentreerd, responsive) -->
-        <div
-            v-if="lockySvg"
-            class="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2
-             pointer-events-none select-none z-20"
-            aria-hidden="true"
-        >
-            <div class="locky-float">
-                <div
-                    class="locky-svg
-                 w-56 h-56
-                 sm:w-64 sm:h-64
-                 md:w-72 md:h-72
-                 lg:w-80 lg:h-80"
-                    v-html="lockySvg"
-                />
-            </div>
-        </div>
+    <main class="relative min-h-screen bg-primary overflow-hidden">
 
         <!-- ===== INTRO DIALOOG ===== -->
         <Transition name="dialog-fade">
             <div
                 v-if="phase === 'intro'"
-                class="absolute inset-0 z-40 flex items-end justify-center px-4 pb-6"
+                class="absolute inset-0 z-40 flex items-center justify-center px-4"
             >
                 <div
                     :key="step"
@@ -116,14 +87,13 @@ onMounted(async () => {
             class="relative z-10 min-h-screen flex flex-col items-center justify-center px-4"
         >
             <!-- boven locky -->
-            <h2 class="mb-[17rem] text-2xl md:text-3xl font-bold text-text-main text-center">
+            <h2 class="mb-6 text-3xl md:text-3xl font-bold text-white text-center">
                 Wat is je naam?
             </h2>
 
-            <!-- onder locky -->
             <div class="w-full max-w-md space-y-4">
                 <div class="space-y-2">
-                    <label class="block text-sm font-medium text-slate-800">
+                    <label class="block font-medium text-white">
                         Jouw naam
                     </label>
 
@@ -139,6 +109,7 @@ onMounted(async () => {
 
                 <BaseButton
                     type="button"
+                    variant="secondary"
                     :disabled="!name.trim()"
                     @click="handleNameNext"
                 >
@@ -152,14 +123,12 @@ onMounted(async () => {
             v-if="phase === 'age'"
             class="relative z-10 min-h-screen flex flex-col items-center justify-center px-4"
         >
-            <!-- boven locky -->
-            <h2 class="mb-[17rem] text-2xl md:text-3xl font-bold text-text-main text-center">
+            <h2 class="mb-6 text-3xl md:text-4xl font-bold text-white text-center">
                 Hoe oud ben je?
             </h2>
 
-            <!-- onder locky -->
             <div class="w-full max-w-xl space-y-4">
-                <p class="text-text-main/80 text-center">
+                <p class="text-white text-center">
                     Zo kunnen we het museum beter laten aansluiten bij jouw leeftijd.
                 </p>
 
@@ -197,6 +166,7 @@ onMounted(async () => {
 
                 <BaseButton
                     type="button"
+                    variant="secondary"
                     :disabled="!selectedAgeGroup"
                     @click="handleAgeNext"
                 >
@@ -245,40 +215,5 @@ onMounted(async () => {
 .dialog-pop {
     animation: dialog-pop 0.24s ease-out;
     transform-origin: bottom center;
-}
-
-/* locky float (inner wrapper, geen conflict met translate) */
-.locky-float {
-    transform-origin: 50% 100%;
-    animation: locky-float 2.2s ease-in-out infinite;
-    filter: drop-shadow(0 10px 16px rgba(0,0,0,0.18));
-}
-
-@keyframes locky-float {
-    0%, 100% { transform: translateY(0) rotate(-2deg); }
-    50% { transform: translateY(-10px) rotate(2deg); }
-}
-
-/* svg intern */
-.locky-svg :deep(.eye) {
-    animation: look 4s ease-in-out infinite;
-    transform-origin: center;
-}
-
-@keyframes look {
-    0%, 100% { transform: translate(0, 0); }
-    25% { transform: translate(3px, 1px); }
-    50% { transform: translate(-3px, 1px); }
-    75% { transform: translate(0, -2px); }
-}
-
-.locky-svg :deep(.lock-arc) {
-    animation: arc-bounce 2.5s ease-in-out infinite;
-    transform-origin: center bottom;
-}
-
-@keyframes arc-bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
 }
 </style>

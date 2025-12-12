@@ -22,7 +22,8 @@ const {
     next,
 } = useDialogLines([
     'Je collectie staat klaar.',
-    'Je hebt je spullen neergezet in je datamuseum. Klaar om het te openen en te zien hoe bezoekers reageren?',
+    'Je hebt je spullen neergezet in je datamuseum.',
+    'Klaar om het te openen en te zien hoe bezoekers reageren?',
 ])
 
 const primaryLabel = computed(() => (isLastLine.value ? 'Open mijn museum' : 'Verder'))
@@ -54,18 +55,6 @@ const handlePrimaryClick = () => {
     }
     startCountdown()
 }
-
-// Option 2: SVG uit /public ophalen en inline renderen
-const lockySvg = ref('')
-
-onMounted(async () => {
-    try {
-        const res = await fetch('/mascotte/locky.svg')
-        lockySvg.value = await res.text()
-    } catch {
-        lockySvg.value = ''
-    }
-})
 </script>
 
 <template>
@@ -77,22 +66,16 @@ onMounted(async () => {
                 :key="step"
                 class="dialog-pop relative w-full max-w-full bg-white shadow-xl px-6 py-8 space-y-4"
             >
-                <!-- Mascotte -->
-                <div
-                    v-if="lockySvg"
-                    class="locky absolute bottom-[80%] -left-6 w-40 h-40 pointer-events-none select-none"
-                    aria-hidden="true"
-                >
-                    <div class="locky-svg" v-html="lockySvg" />
-                </div>
-
-                <p class="text-text-main">
+                <span class="uppercase text-primary">Gids</span>
+                <p class="text-text-main m-0">
                     {{ currentLine }}
                 </p>
 
-                <BaseButton type="button" @click="handlePrimaryClick">
-                    {{ primaryLabel }}
-                </BaseButton>
+                <div class="flex justify-end">
+                    <BaseButton type="button" @click="handlePrimaryClick">
+                        {{ primaryLabel }}
+                    </BaseButton>
+                </div>
             </div>
 
             <!-- countdown -->

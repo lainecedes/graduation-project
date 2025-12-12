@@ -19,10 +19,12 @@ const props = defineProps<{
 
             <div
                 v-if="showBubble"
-                class="absolute -top-3 right-full mr-3 max-w-[220px]
-               rounded-2xl bg-primary px-4 py-3 text-xs md:text-sm text-text-on-dark shadow-lg
-               after:absolute after:top-1/2 after:left-full after:-translate-y-1/2
-               after:border-8 after:border-transparent after:border-l-white"
+                class="absolute -top-3 right-full mr-3
+         w-64 sm:w-72 md:w-80
+         rounded-2xl bg-primary px-4 pl-6 py-3
+         text-xs md:text-sm text-text-on-dark shadow-lg
+         after:absolute after:top-1/2 after:left-full after:-translate-y-1/2
+         after:border-8 after:border-transparent after:border-l-primary"
             >
                 <p>
                     Dit is de {{ objectName }} van

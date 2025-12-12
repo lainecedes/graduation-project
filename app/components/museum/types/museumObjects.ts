@@ -1,5 +1,12 @@
 // app/components/museum/types/museumObjects.ts
-
+type ObjectDetail = {
+    line1: string
+    line2: string
+    image?: {
+        src: string
+        alt: string
+    }
+}
 export type MuseumObjectId = 'chat' | 'passport' | 'photo' | 'geotag' | 'profile'
 
 export const objectLabels: Record<MuseumObjectId, string> = {
@@ -10,25 +17,33 @@ export const objectLabels: Record<MuseumObjectId, string> = {
     profile: 'Interesse profiel',
 }
 
-export const objectDetails: Record<MuseumObjectId, { line1: string; line2: string }> = {
+export const objectDetails: Record<MuseumObjectId, ObjectDetail> = {
     chat: {
-        line1: 'Dit is een sleutel met jouw adres. Online kan dit laten zien waar je woont.',
-        line2: 'Als je foto’s of locatie deelt, kunnen vreemde accounts zien waar je huis is.',
+        line1: 'Dit object staat voor privéberichten die je stuurt, zoals chats en DM’s.',
+        line2: 'Ook al voelt een chat privé, berichten kunnen worden doorgestuurd of opgeslagen zonder dat jij dat ziet.',
     },
+
     passport: {
-        line1: 'Dit mini-paspoort staat voor info zoals je naam en leeftijd.',
-        line2: 'Als je social media profiel openbaar is, kunnen onbekenden deze info gebruiken of zich voordoen als jij.',
+        line1: 'Dit object staat voor gegevens zoals je naam, leeftijd of geboortedatum.',
+        line2: 'Als deze informatie openbaar is, kunnen anderen doen alsof zij jou zijn of jouw gegevens verkeerd gebruiken.',
     },
+
     photo: {
-        line1: 'Deze foto laat je locatie zien. Dat gebeurt ook als je locatie delen aan staat op bijv Tiktok of Snapchat.',
-        line2: 'Mensen kunnen dan zien waar je bent en waar je vaak komt.',
+        line1: 'Dit object staat voor foto’s die je online deelt.',
+        line2: 'Foto’s kunnen meer laten zien dan je denkt, zoals waar je bent of wie er bij je is.',
     },
+
     geotag: {
-        line1: 'Deze schoolkaart laat zien op welke school je zit.',
-        line2: 'Als je dat online deelt, weten onbekenden waar je elke dag bent.',
+        line1: 'Een geotag is een tag met je locatie die aan een foto, post of snap zit.',
+        line2: 'Hierdoor kunnen anderen zien waar je bent of waar je vaak komt.',
+        image: {
+            src: '/content/snapchat-location.png',
+            alt: 'Voorbeeld van een locatie-tag op een foto',
+        },
     },
+
     profile: {
-        line1: 'Deze kalender laat zien wat je planning is.',
-        line2: 'Als je online vertelt wanneer je weg bent, kunnen onbekenden je routines zien.',
+        line1: 'Dit object staat voor het beeld dat apps van jou maken.',
+        line2: 'Wat je liket, zoekt of bekijkt, helpt apps bepalen wat ze jou laten zien.',
     },
 }

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import BaseButton from "~/components/ui/BaseButton.vue";
+
 const router = useRouter()
 
 const { resetPlayer, playerName } = usePlayerProfile()
@@ -51,19 +53,22 @@ const goToShelves = () => {
             />
         </div>
 
-        <button
-            class="text-xl text-primary p-4 rounded-xl bg-background"
-            type="button"
-            @click="goToShelves"
-        >
-            Naar stellingen
-        </button>
+        <div class="flex flex-row gap-4">
+            <BaseButton
+                type="button"
+                variant="secondary"
+                @click="goToShelves"
+            >
+                Maak je collectie!
+            </BaseButton>
 
-        <button
-            type="button"
-            @click="endSession"
-        >
-            Sessie afsluiten en opnieuw beginnen
-        </button>
+            <BaseButton
+                type="button"
+                variant="danger"
+                @click="endSession"
+            >
+                Opnieuw beginnen
+            </BaseButton>
+        </div>
     </section>
 </template>

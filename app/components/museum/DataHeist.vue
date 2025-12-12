@@ -26,7 +26,7 @@ const {
 ])
 
 const primaryLabel = computed(() =>
-    isLastLine.value ? 'Start dataheist' : 'Verder',
+    isLastLine.value ? 'Wat gaat er gebeuren?' : 'Verder',
 )
 
 watch(
@@ -48,7 +48,7 @@ const startHeist = () => {
     emit('start')
     emit('close')
 
-    // 🔥 dief laten verschijnen + animatie starten
+    // dief laten verschijnen + animatie starten
     isHeistActive.value = true
 
     // optioneel: na X seconden eindscene triggeren

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { MuseumObjectId } from '~/components/museum/types/museumObjects'
 import { objectLabels, objectDetails } from '~/components/museum/types/museumObjects'
+import BaseButton from "~/components/ui/BaseButton.vue";
 
 const props = defineProps<{
     id: MuseumObjectId
@@ -11,6 +12,8 @@ const emit = defineEmits<{
 }>()
 
 const handleClose = () => emit('close')
+
+const image = computed(() => objectDetails[props.id].image)
 </script>
 
 <template>
@@ -27,21 +30,20 @@ const handleClose = () => emit('close')
                 {{ objectDetails[id].line2 }}
             </p>
 
+            <img
+                v-if="image"
+                :src="image.src"
+                :alt="image.alt"
+                class="w-full rounded-xl mt-3"
+            />
+
             <div class="flex flex-wrap gap-2 pt-2">
-                <button
+                <BaseButton
                     type="button"
-                    class="inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-bold bg-slate-900 text-white hover:opacity-90 active:translate-y-px transition"
                     @click="handleClose"
                 >
                     Ik begrijp het
-                </button>
-                <button
-                    type="button"
-                    class="inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-bold bg-slate-100 text-slate-800 hover:bg-slate-200 active:translate-y-px transition"
-                    @click="handleClose"
-                >
-                    Oh, zo…
-                </button>
+                </BaseButton>
             </div>
         </div>
     </div>
