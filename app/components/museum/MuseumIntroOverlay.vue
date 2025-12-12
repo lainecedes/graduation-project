@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useDialogLines } from '@/composables/useDialogLines'
-import BaseButton from "~/components/ui/BaseButton.vue";
+import BaseButton from '~/components/ui/BaseButton.vue'
 
 const props = defineProps<{
     playerName: string
@@ -20,16 +20,12 @@ const {
     currentLine,
     isLastLine,
     next,
-    reset,
 } = useDialogLines([
-    // je kunt playerName er ook in interpoleren via computed, maar lekker simpel:
     'Je collectie staat klaar.',
     'Je hebt je spullen neergezet in je datamuseum. Klaar om het te openen en te zien hoe bezoekers reageren?',
 ])
 
-const primaryLabel = computed(() =>
-    isLastLine.value ? 'Open mijn museum' : 'Verder',
-)
+const primaryLabel = computed(() => (isLastLine.value ? 'Open mijn museum' : 'Verder'))
 
 const startCountdown = () => {
     if (isCountingDown.value) return
@@ -56,35 +52,45 @@ const handlePrimaryClick = () => {
         next()
         return
     }
-
-    // countdown starten op laatste regel
     startCountdown()
 }
 
-// als je deze overlay later ook wilt sluiten/heropenen:
-// watch(() => props.somethingOpen, (val) => { if (val) reset() })
+// Option 2: SVG uit /public ophalen en inline renderen
+const lockySvg = ref('')
+
+onMounted(async () => {
+    try {
+        const res = await fetch('/mascotte/locky.svg')
+        lockySvg.value = await res.text()
+    } catch {
+        lockySvg.value = ''
+    }
+})
 </script>
 
 <template>
     <Transition name="dialog-fade">
-        <div
-            v-if="true"
-            class="absolute inset-0 z-40 flex items-end justify-center px-4 pb-6"
-        >
+        <div v-if="true" class="absolute inset-0 z-40 flex items-end justify-center px-4 pb-6">
             <!-- Dialog lines -->
             <div
                 v-if="!isCountingDown"
                 :key="step"
-                class="dialog-pop w-full max-w-full bg-white shadow-xl px-6 py-8 space-y-4"
+                class="dialog-pop relative w-full max-w-full bg-white shadow-xl px-6 py-8 space-y-4"
             >
+                <!-- Mascotte -->
+                <div
+                    v-if="lockySvg"
+                    class="locky absolute bottom-[80%] -left-6 w-40 h-40 pointer-events-none select-none"
+                    aria-hidden="true"
+                >
+                    <div class="locky-svg" v-html="lockySvg" />
+                </div>
+
                 <p class="text-text-main">
                     {{ currentLine }}
                 </p>
 
-                <BaseButton
-                    type="button"
-                    @click="handlePrimaryClick"
-                >
+                <BaseButton type="button" @click="handlePrimaryClick">
                     {{ primaryLabel }}
                 </BaseButton>
             </div>
@@ -104,21 +110,47 @@ const handlePrimaryClick = () => {
 
 <style scoped>
 @keyframes countdown-scale {
-    0% {
-        transform: scale(0.7);
-        opacity: 0;
-    }
-    50% {
-        transform: scale(1.1);
-        opacity: 1;
-    }
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
+    0% { transform: scale(0.7); opacity: 0; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
 }
 
 .animate-countdown-scale {
     animation: countdown-scale 0.4s ease-out;
+}
+
+/* Mascotte: het hele ding zweeft */
+.locky {
+    transform-origin: 50% 100%;
+    animation: locky-float 2.2s ease-in-out infinite;
+    filter: drop-shadow(0 10px 16px rgba(0,0,0,0.18));
+}
+
+@keyframes locky-float {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-10px) rotate(2deg); }
+}
+
+/* Let op: scoped + v-html => gebruik :deep om de interne SVG classes te pakken */
+.locky :deep(.eye) {
+    animation: look 4s ease-in-out infinite;
+    transform-origin: center;
+}
+
+@keyframes look {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(3px, 1px); }
+    50% { transform: translate(-3px, 1px); }
+    75% { transform: translate(0, -2px); }
+}
+
+.locky :deep(.lock-arc) {
+    animation: arc-bounce 2.5s ease-in-out infinite;
+    transform-origin: center bottom;
+}
+
+@keyframes arc-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
 }
 </style>

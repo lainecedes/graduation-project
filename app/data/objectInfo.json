@@ -1,0 +1,76 @@
+{
+    "chat": {
+        "title": "Persoonlijke chatbubbel",
+        "summary": "Privéchats voelen veilig, maar wat je daar zegt kan supergevoelig zijn. Denk aan grensoverschrijdende berichten, vertrouwelijke gesprekken of screenshots die anderen kunnen delen.",
+        "risks": [
+            "Berichten kunnen worden doorgestuurd of gescreenshott zonder dat jij het weet",
+            "Kwetsbare of persoonlijke info kan tegen je gebruikt worden",
+            "Manipulatie of chantage als iemand gevoelige chats in handen krijgt"
+        ],
+        "tips": [
+            "Deel geen foto’s of teksten die je niet op straat terug wilt zien",
+            "Blokkeer en rapporteer mensen die over je grenzen gaan",
+            "Gebruik verdwijnende berichten alleen als extra, niet als garantie"
+        ]
+    },
+
+    "passport": {
+        "title": "Paspoort (identiteitsgegevens)",
+        "summary": "Je paspoort bevat kerninfo over wie jij bent. Als dit wordt gedeeld of gestolen, kan iemand zich makkelijk voordoen als jou. Dat kan enorme gevolgen hebben.",
+        "risks": [
+            "Identiteitsfraude: iemand opent accounts of doet aankopen op jouw naam",
+            "Je persoonsgegevens kunnen op duistere websites belanden",
+            "Combinatie met adres of BSN maakt misbruik nog makkelijker"
+        ],
+        "tips": [
+            "Plaats nooit foto’s van je paspoort op social media",
+            "Stuur kopieën alleen via veilige kanalen en markeer info die niet nodig is",
+            "Vraag een volwassene als je twijfelt of je een ID echt moet delen"
+        ]
+    },
+
+    "photo": {
+        "title": "Privefoto",
+        "summary": "Expliciete of gevoelige foto’s kunnen enorm veel schade aanrichten als ze bij de verkeerde persoon terechtkomen. Eén screenshot is genoeg om de controle kwijt te raken.",
+        "risks": [
+            "Verspreiding zonder jouw toestemming",
+            "Chantage of dreiging (sextortion)",
+            "Foto’s kunnen jaren blijven rondzweven, ook als jij ze verwijdert"
+        ],
+        "tips": [
+            "Stuur zulke foto’s nooit naar mensen die je niet volledig vertrouwt",
+            "Let op je achtergrond, metadata en herkenbare details",
+            "Twijfel je? Bespreek het met iemand die je vertrouwt voordat je iets deelt"
+        ]
+    },
+
+    "geotag": {
+        "title": "Geotag / Locatie",
+        "summary": "Locatie-informatie lijkt klein, maar laat precies zien waar je bent, waar je vaak komt en zelfs je dagelijkse routines. Superwaardevol voor vreemden of criminelen.",
+        "risks": [
+            "Mensen kunnen zien waar je woont, naar school gaat of vaak hangt",
+            "Je bewegingen en gewoontes worden voorspelbaar",
+            "Stalkers of oplichters kunnen je makkelijker volgen of targeten"
+        ],
+        "tips": [
+            "Zet automatische locatie-tags in apps uit",
+            "Plaats foto’s liever achteraf dan live",
+            "Laat alleen vrienden je locatiegevoelige posts zien"
+        ]
+    },
+
+    "profile": {
+        "title": "Interesseprofiel",
+        "summary": "Apps bouwen een verrassend precies beeld van je op: waar je op klikt, wat je leuk vindt, waar je naar zoekt. Dit profiel bepaalt wat je te zien krijgt, maar kan ook misbruikt worden.",
+        "risks": [
+            "Reclames worden hypergericht op jouw interesses (of onzekerheden)",
+            "Apps weten meer over je dan je denkt, zoals humeur of routine",
+            "Je zoekgeschiedenis kan een kwetsbaar beeld van je vormen"
+        ],
+        "tips": [
+            "Check regelmatig welke interesses platforms aan je profiel koppelen",
+            "Wis je zoekgeschiedenis af en toe",
+            "Gebruik privé- of incognitomodus als je niet wilt dat alles wordt opgeslagen"
+        ]
+    }
+}

@@ -1,0 +1,76 @@
+{
+    "chat": [
+        {
+            "title": "Check je recente chats",
+            "description": "Open je favoriete chat-app en kijk of er gesprekken staan met persoonlijke of grensoverschrijdende berichten die je liever privé houdt.",
+            "mediaType": "image",
+            "mediaSrc": "/steps/chat-step-1.png"
+        },
+        {
+            "title": "Beheer wie je kan bereiken",
+            "description": "Kijk in de instellingen wie jou berichten mogen sturen. Zet onbekenden of onveilige accounts op beperkt, block of mute.",
+            "mediaType": "image",
+            "mediaSrc": "/steps/chat-step-2.png"
+        }
+    ],
+
+    "passport": [
+        {
+            "title": "Check je galerij",
+            "description": "Bekijk of je ooit een foto hebt gemaakt van je paspoort of ID. Spoor deze op, ook in oude albums of verwijderde items.",
+            "mediaType": "image",
+            "mediaSrc": "/steps/passport-step-1.png"
+        },
+        {
+            "title": "Verwijder gevoelige foto's",
+            "description": "Verwijder foto's van je paspoort of zet ze in een beveiligde map zodat niemand ze per ongeluk kan zien of gebruiken.",
+            "mediaType": "image",
+            "mediaSrc": "/steps/passport-step-2.png"
+        }
+    ],
+
+    "photo": [
+        {
+            "title": "Check je camera-instellingen",
+            "description": "Ga naar je camera- of appinstellingen en kijk of locatie automatisch wordt opgeslagen bij foto's. Zet dit uit als je dat veiliger vindt.",
+            "mediaType": "image",
+            "mediaSrc": "/steps/photo-step-1.png"
+        },
+        {
+            "title": "Kijk naar je gedeelde foto's",
+            "description": "Scroll door posts, stories of snaps en kijk of er gevoelige of privéfoto’s tussen staan die je wilt verwijderen of beperken.",
+            "mediaType": "image",
+            "mediaSrc": "/steps/photo-step-2.png"
+        }
+    ],
+
+    "geotag": [
+        {
+            "title": "Controleer je posts op locatie",
+            "description": "Open je socials en check of recente posts automatisch een locatie laten zien. Kijk vooral naar vaste plekken zoals school of thuis.",
+            "mediaType": "image",
+            "mediaSrc": "/steps/geotag-step-1.png"
+        },
+        {
+            "title": "Pas je privacy aan",
+            "description": "Zet locatie-tagging uit of zorg dat alleen vrienden je locatiegevoelige posts kunnen zien.",
+            "mediaType": "image",
+            "mediaSrc": "/steps/geotag-step-2.png"
+        }
+    ],
+
+    "profile": [
+        {
+            "title": "Bekijk jouw interesses in apps",
+            "description": "Ga in apps zoals TikTok, Instagram of Google naar 'interessen' of 'advertentievoorkeuren' en kijk wat ze over jou hebben opgeslagen.",
+            "mediaType": "image",
+            "mediaSrc": "/steps/profile-step-1.png"
+        },
+        {
+            "title": "Maak je profiel schoner",
+            "description": "Wis zoekgeschiedenis, reset interesses of zet gepersonaliseerde advertenties uit zodat je profiel minder voorspelbaar wordt.",
+            "mediaType": "image",
+            "mediaSrc": "/steps/profile-step-2.png"
+        }
+    ]
+}

@@ -23,19 +23,19 @@ const shelves = [
 ]
 
 const objectConfig: Record<MuseumObjectId, { scale: string }> = {
-    key: { scale: 'w-[50%]' },
+    chat: { scale: 'w-[50%]' },
     passport: { scale: 'w-[40%]' },
     photo: { scale: 'w-[55%]' },
-    schoolCard: { scale: 'w-[45%]' },
-    calendar: { scale: 'w-[52%]' },
+    geotag: { scale: 'w-[45%]' },
+    profile: { scale: 'w-[52%]' },
 }
 
 const imageMap: Record<MuseumObjectId, string> = {
-    key: '/objects/key.svg',
+    chat: '/objects/chat.svg',
     passport: '/objects/passport.svg',
-    photo: '/objects/key.svg',       // TODO: juiste asset
-    schoolCard: '/objects/key.svg',  // TODO: juiste asset
-    calendar: '/objects/key.svg',    // TODO: juiste asset
+    photo: '/objects/privefoto.svg',
+    geotag: '/objects/geotag.svg',
+    profile: '/objects/interesse-profiel.svg',
 }
 
 const handleClick = (id: MuseumObjectId) => {

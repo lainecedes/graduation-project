@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useMuseumSelection } from '@/composables/useMuseumSelection'
 import { usePlayerProfile } from '@/composables/usePlayerProfile'
 import type { MuseumObjectId } from '~/components/museum/types/museumObjects'
@@ -10,8 +10,9 @@ import VisitorPhotographer from '~/components/museum/VisitorPhotographer.vue'
 import ObjectInfoDialog from '~/components/museum/ObjectInfoDialog.vue'
 import MuseumIntroOverlay from '~/components/museum/MuseumIntroOverlay.vue'
 import DataHeist from '~/components/museum/DataHeist.vue'
-import BaseButton from "~/components/ui/BaseButton.vue";
+import BaseButton from '~/components/ui/BaseButton.vue'
 
+const router = useRouter()
 const { selectedObjects } = useMuseumSelection()
 const { playerName } = usePlayerProfile()
 
@@ -28,8 +29,29 @@ const isHeistActive = ref(false)
 const isHeistFinished = ref(false)
 const showHeistDialog = ref(false)
 
+// ✅ alleen de objecten die in deze versie bestaan
+const VALID_OBJECT_IDS: MuseumObjectId[] = [
+    'chat',
+    'passport',
+    'photo',
+    'geotag',
+    'profile',
+]
+
+// ✅ gefilterde selectie op basis van geldige IDs
+const filteredSelected = computed<MuseumObjectId[]>(() =>
+    selectedObjects.value.filter((id): id is MuseumObjectId =>
+        VALID_OBJECT_IDS.includes(id as MuseumObjectId),
+    ),
+)
+
+// oude IDs weghalen op zodra je het scherm binnenkomt
+onMounted(() => {
+    selectedObjects.value = [...filteredSelected.value]
+})
+
 const visitorObjectId = computed<MuseumObjectId | null>(
-    () => (selectedObjects.value[0] as MuseumObjectId | undefined) ?? null,
+    () => filteredSelected.value[0] ?? null,
 )
 
 const handleMuseumOpened = () => {
@@ -59,25 +81,25 @@ const handleCloseDialog = () => {
 }
 
 const viewedCount = computed(() =>
-    selectedObjects.value.filter((id) =>
-        clickedObjects.value.includes(id as MuseumObjectId),
+    filteredSelected.value.filter((id) =>
+        clickedObjects.value.includes(id),
     ).length,
 )
 
-const totalCount = computed(() => selectedObjects.value.length)
+const totalCount = computed(() => filteredSelected.value.length)
 
 const progressPercent = computed(() =>
     totalCount.value === 0 ? 0 : (viewedCount.value / totalCount.value) * 100,
 )
 
 const allObjectsViewed = computed(() =>
-    selectedObjects.value.length > 0 &&
-    selectedObjects.value.every((id) =>
-        clickedObjects.value.includes(id as MuseumObjectId),
+    filteredSelected.value.length > 0 &&
+    filteredSelected.value.every((id) =>
+        clickedObjects.value.includes(id),
     ),
 )
 
-// ✅ Verder-knop: opent alleen de DataHeist dialoog
+// open data lek dialoog vanaf hier
 const handleNextClick = () => {
     if (!allObjectsViewed.value) return
     showHeistDialog.value = true
@@ -89,8 +111,9 @@ const handleHeistStart = () => {
 
 const handleHeistFinished = () => {
     isHeistFinished.value = true
-    // later: router.push('/whatever')
-    console.log('Dataheist klaar -> naar eindscene')
+    setTimeout(() => {
+        router.push('/results')
+    }, 2000)
 }
 
 const handleHeistClose = () => {
@@ -140,15 +163,15 @@ const handleHeistClose = () => {
         </div>
 
         <!-- trigger datalek dialoog -->
-        <div class="fixed bottom-4 right-4 z-30 ">
-        <BaseButton
-            v-if="!showHeistDialog && !isHeistActive"
-            type="button"
-            :disabled="!allObjectsViewed"
-            @click="handleNextClick"
-        >
-            Verder
-        </BaseButton>
+        <div class="fixed bottom-4 right-4 z-30">
+            <BaseButton
+                v-if="!showHeistDialog && !isHeistActive"
+                type="button"
+                :disabled="!allObjectsViewed"
+                @click="handleNextClick"
+            >
+                Verder
+            </BaseButton>
         </div>
 
         <MuseumIntroOverlay

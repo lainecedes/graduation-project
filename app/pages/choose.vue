@@ -11,19 +11,19 @@ const endSession = () => {
 }
 
 const imageMap: Record<string, string> = {
-    key: '/objects/key.svg',
+    chat: '/objects/chat.svg',
     passport: '/objects/passport.svg',
-    photo: '/objects/key.svg',
-    schoolCard: '/objects/key.svg',
-    calendar: '/objects/key.svg',
+    photo: '/objects/privefoto.svg',
+    geotag: '/objects/geotag.svg',
+    profile: '/objects/interesse-profiel.svg',
 }
 
 const objects = [
-    { id: 'key', label: 'Sleutel met adres' },
-    { id: 'passport', label: 'Mini paspoort' },
-    { id: 'photo', label: 'Foto met locatie' },
-    { id: 'schoolCard', label: 'Schoolkaart' },
-    { id: 'calendar', label: 'Kalender' },
+    { id: 'chat', label: 'Persoonlijke chatbubbel' },
+    { id: 'passport', label: 'Paspoort' },
+    { id: 'photo', label: 'Privefoto' },
+    { id: 'geotag', label: 'Geotag' },
+    { id: 'profile', label: 'Interesse profiel' },
 ]
 
 const goToShelves = () => {

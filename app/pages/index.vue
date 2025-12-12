@@ -1,42 +1,35 @@
 <script setup lang="ts">
-import IntroStep from '~/components/onboarding/IntroStep.vue'
-import NameStep from '~/components/onboarding/NameStep.vue'
-import AgeStep from '~/components/onboarding/AgeStep.vue'
-
-const currentStep = ref<'intro' | 'name' | 'age' >('intro')
-const { playerName, playerAgeGroup } = usePlayerProfile()
-
 const router = useRouter()
 
-const goToNameScreen = () => {
-    currentStep.value = 'name'
-}
-
-const startMuseum = () => {
-    if (!playerName.value.trim()) return
-    router.push('/choose')
+const goStart = () => {
+    router.push('/onboarding')
 }
 </script>
 
 <template>
-    <main
-        class="min-h-screen flex items-center justify-center px-4 bg-background-alt"
-    >
-        <IntroStep
-            v-if="currentStep === 'intro'"
-            @next="currentStep = 'name'"
-        />
+    <main class="min-h-screen flex items-center justify-center px-4 bg-background-alt">
+        <section class="relative w-full max-w-xl text-center space-y-6">
+            <img
+                src="/characters/burglar.svg"
+                alt=""
+                class="absolute right-[-10%] top-[-1rem] w-[70%] h-auto pointer-events-none opacity-30"
+            />
 
-        <NameStep
-            v-else-if="currentStep === 'name'"
-            v-model="playerName"
-            @next="currentStep = 'age'"
-        />
+            <h1 class="pt-24 text-5xl text-primary font-heading">
+                De Digitale Schatkist
+            </h1>
 
-        <AgeStep
-            v-else-if="currentStep === 'age'"
-            v-model="playerAgeGroup"
-            @start="startMuseum"
-        />
+            <p class="text-text-main/80">
+                Stap jouw datamuseum binnen en ontdek wat jouw keuzes losmaken.
+            </p>
+
+            <button
+                type="button"
+                class="inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold bg-primary text-white hover:opacity-90 active:translate-y-px transition"
+                @click="goStart"
+            >
+                Start
+            </button>
+        </section>
     </main>
 </template>
