@@ -1,5 +1,4 @@
 <!-- components/ui/BaseButton.vue -->
-<!-- components/ui/BaseButton.vue -->
 <script setup lang="ts">
 const props = withDefaults(
     defineProps<{

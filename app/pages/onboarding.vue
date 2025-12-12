@@ -15,7 +15,9 @@ const phase = ref<'intro' | 'name' | 'age'>('intro')
 const { step, currentLine, isLastLine, next } = useDialogLines([
     'Psst… ik ben Locky.',
     'Ik pas op jouw spullen in dit datamuseum.',
-    'Eerst jouw naam, dan gaan we beginnen.',
+    'Straks ga jij keuzes maken over wat je deelt.',
+    'En daarna laat ik je zien wat er daarna kan gebeuren...',
+    'Eerst je naam, dan kunnen we aan de slag!',
 ])
 
 const handleIntroNext = () => {
@@ -26,6 +28,20 @@ const handleIntroNext = () => {
     phase.value = 'name'
 }
 
+// ✅ bounce trigger (blijft float behouden)
+const lockyBounce = ref(false)
+
+const triggerLockyBounce = () => {
+    // force re-trigger
+    lockyBounce.value = false
+    requestAnimationFrame(() => {
+        lockyBounce.value = true
+        window.setTimeout(() => {
+            lockyBounce.value = false
+        }, 480) // match CSS duration
+    })
+}
+
 // name (samengevoegd)
 const name = computed({
     get: () => playerName.value,
@@ -34,6 +50,7 @@ const name = computed({
 
 const handleNameNext = () => {
     if (!name.value.trim()) return
+    triggerLockyBounce()
     phase.value = 'age'
 }
 
@@ -48,11 +65,16 @@ const selectedAgeGroup = computed<AgeGroup | null>({
 
 const handleSelectAge = (value: AgeGroup) => {
     selectedAgeGroup.value = value
+    triggerLockyBounce() // ✅ bounce bij kiezen
 }
 
 const handleAgeNext = () => {
     if (!selectedAgeGroup.value) return
-    router.push('/choose')
+    triggerLockyBounce()
+    // kleine micro-delay zodat je bounce nog net ziet (mag weg als je dat niet wil)
+    window.setTimeout(() => {
+        router.push('/choose')
+    }, 140)
 }
 
 // locky svg inline
@@ -70,26 +92,30 @@ onMounted(async () => {
 
 <template>
     <main class="relative min-h-screen bg-background-alt overflow-hidden">
-        <!-- LOCKY (gecentreerd, responsive) -->
+        <!-- Locky -->
         <div
             v-if="lockySvg"
             class="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2
              pointer-events-none select-none z-20"
             aria-hidden="true"
         >
+            <!-- float wrapper -->
             <div class="locky-float">
-                <div
-                    class="locky-svg
-                 w-56 h-56
-                 sm:w-64 sm:h-64
-                 md:w-72 md:h-72
-                 lg:w-80 lg:h-80"
-                    v-html="lockySvg"
-                />
+                <!-- bounce wrapper -->
+                <div :class="['locky-bounce', lockyBounce && 'is-bouncing']">
+                    <div
+                        class="locky-svg
+                   w-56 h-56
+                   sm:w-64 sm:h-64
+                   md:w-72 md:h-72
+                   lg:w-80 lg:h-80"
+                        v-html="lockySvg"
+                    />
+                </div>
             </div>
         </div>
 
-        <!-- ===== INTRO DIALOOG ===== -->
+        <!-- ===== intro onboarding ===== -->
         <Transition name="dialog-fade">
             <div
                 v-if="phase === 'intro'"
@@ -110,7 +136,7 @@ onMounted(async () => {
             </div>
         </Transition>
 
-        <!-- ===== NAAM ===== -->
+        <!-- naam invullen -->
         <div
             v-if="phase === 'name'"
             class="relative z-10 min-h-screen flex flex-col items-center justify-center px-4"
@@ -147,17 +173,15 @@ onMounted(async () => {
             </div>
         </div>
 
-        <!-- ===== LEEFTIJD ===== -->
+        <!--    leeftijdskeuze    -->
         <div
             v-if="phase === 'age'"
             class="relative z-10 min-h-screen flex flex-col items-center justify-center px-4"
         >
-            <!-- boven locky -->
             <h2 class="mb-[17rem] text-2xl md:text-3xl font-bold text-text-main text-center">
                 Hoe oud ben je?
             </h2>
 
-            <!-- onder locky -->
             <div class="w-full max-w-xl space-y-4">
                 <p class="text-text-main/80 text-center">
                     Zo kunnen we het museum beter laten aansluiten bij jouw leeftijd.
@@ -247,7 +271,7 @@ onMounted(async () => {
     transform-origin: bottom center;
 }
 
-/* locky float (inner wrapper, geen conflict met translate) */
+/* A: float wrapper */
 .locky-float {
     transform-origin: 50% 100%;
     animation: locky-float 2.2s ease-in-out infinite;
@@ -257,6 +281,18 @@ onMounted(async () => {
 @keyframes locky-float {
     0%, 100% { transform: translateY(0) rotate(-2deg); }
     50% { transform: translateY(-10px) rotate(2deg); }
+}
+
+/* B: bounce wrapper (kan bovenop float) */
+.locky-bounce.is-bouncing {
+    animation: locky-bounce 0.48s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes locky-bounce {
+    0%   { transform: translateY(0) rotate(0deg) scale(1); }
+    35%  { transform: translateY(-18px) rotate(-2deg) scale(1.03); }
+    65%  { transform: translateY(0) rotate(2deg) scale(0.99); }
+    100% { transform: translateY(0) rotate(0deg) scale(1); }
 }
 
 /* svg intern */

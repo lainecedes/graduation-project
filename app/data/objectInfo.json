@@ -1,76 +1,76 @@
 {
     "chat": {
-        "title": "Persoonlijke chatbubbel",
-        "summary": "Privéchats voelen veilig, maar wat je daar zegt kan supergevoelig zijn. Denk aan grensoverschrijdende berichten, vertrouwelijke gesprekken of screenshots die anderen kunnen delen.",
+        "title": "Persoonlijke chat",
+        "summary": "Privéberichten voelen veilig, maar wat je daar stuurt kan snel misgaan. Screenshots of doorgestuurde berichten zijn zo gemaakt.",
         "risks": [
-            "Berichten kunnen worden doorgestuurd of gescreenshott zonder dat jij het weet",
-            "Kwetsbare of persoonlijke info kan tegen je gebruikt worden",
-            "Manipulatie of chantage als iemand gevoelige chats in handen krijgt"
+            "Iemand kan je berichten doorsturen of screenshotten",
+            "Persoonlijke dingen kunnen tegen je gebruikt worden",
+            "Je kunt onder druk worden gezet met wat je hebt gestuurd"
         ],
         "tips": [
-            "Deel geen foto’s of teksten die je niet op straat terug wilt zien",
-            "Blokkeer en rapporteer mensen die over je grenzen gaan",
-            "Gebruik verdwijnende berichten alleen als extra, niet als garantie"
+            "Stuur niks wat je niet aan iedereen zou durven laten zien",
+            "Blokkeer mensen die over je grenzen gaan",
+            "Vertrouw niet alleen op verdwijnende berichten"
         ]
     },
 
     "passport": {
-        "title": "Paspoort (identiteitsgegevens)",
-        "summary": "Je paspoort bevat kerninfo over wie jij bent. Als dit wordt gedeeld of gestolen, kan iemand zich makkelijk voordoen als jou. Dat kan enorme gevolgen hebben.",
+        "title": "Paspoortgegevens",
+        "summary": "Je paspoort laat precies zien wie je bent. Als dit uitlekt, kan iemand zich voordoen als jou.",
         "risks": [
-            "Identiteitsfraude: iemand opent accounts of doet aankopen op jouw naam",
-            "Je persoonsgegevens kunnen op duistere websites belanden",
-            "Combinatie met adres of BSN maakt misbruik nog makkelijker"
+            "Iemand kan dingen doen in jouw naam",
+            "Je gegevens kunnen op verkeerde plekken terechtkomen",
+            "Misbruik wordt makkelijker met extra info erbij"
         ],
         "tips": [
-            "Plaats nooit foto’s van je paspoort op social media",
-            "Stuur kopieën alleen via veilige kanalen en markeer info die niet nodig is",
-            "Vraag een volwassene als je twijfelt of je een ID echt moet delen"
+            "Zet nooit je paspoort online",
+            "Stuur kopieën alleen als het echt moet",
+            "Vraag hulp als je twijfelt"
         ]
     },
 
     "photo": {
-        "title": "Privefoto",
-        "summary": "Expliciete of gevoelige foto’s kunnen enorm veel schade aanrichten als ze bij de verkeerde persoon terechtkomen. Eén screenshot is genoeg om de controle kwijt te raken.",
+        "title": "Privéfoto",
+        "summary": "Gevoelige foto’s kun je niet meer terughalen als ze zijn doorgestuurd.",
         "risks": [
-            "Verspreiding zonder jouw toestemming",
-            "Chantage of dreiging (sextortion)",
-            "Foto’s kunnen jaren blijven rondzweven, ook als jij ze verwijdert"
+            "Foto’s kunnen zonder toestemming worden gedeeld",
+            "Iemand kan je ermee bedreigen",
+            "Foto’s kunnen lang online blijven"
         ],
         "tips": [
-            "Stuur zulke foto’s nooit naar mensen die je niet volledig vertrouwt",
-            "Let op je achtergrond, metadata en herkenbare details",
-            "Twijfel je? Bespreek het met iemand die je vertrouwt voordat je iets deelt"
+            "Stuur geen foto’s waar je later spijt van kunt krijgen",
+            "Let op wat er op de achtergrond te zien is",
+            "Praat met iemand als je twijfelt"
         ]
     },
 
     "geotag": {
-        "title": "Geotag / Locatie",
-        "summary": "Locatie-informatie lijkt klein, maar laat precies zien waar je bent, waar je vaak komt en zelfs je dagelijkse routines. Superwaardevol voor vreemden of criminelen.",
+        "title": "Locatie",
+        "summary": "Je locatie laat zien waar je bent en waar je vaak komt.",
         "risks": [
-            "Mensen kunnen zien waar je woont, naar school gaat of vaak hangt",
-            "Je bewegingen en gewoontes worden voorspelbaar",
-            "Stalkers of oplichters kunnen je makkelijker volgen of targeten"
+            "Mensen kunnen zien waar je woont of naar school gaat",
+            "Je dag wordt voorspelbaar",
+            "Vreemden kunnen je makkelijker volgen"
         ],
         "tips": [
-            "Zet automatische locatie-tags in apps uit",
-            "Plaats foto’s liever achteraf dan live",
-            "Laat alleen vrienden je locatiegevoelige posts zien"
+            "Zet locatie uit in apps",
+            "Post foto’s pas later",
+            "Deel locatie alleen met mensen die je kent"
         ]
     },
 
     "profile": {
         "title": "Interesseprofiel",
-        "summary": "Apps bouwen een verrassend precies beeld van je op: waar je op klikt, wat je leuk vindt, waar je naar zoekt. Dit profiel bepaalt wat je te zien krijgt, maar kan ook misbruikt worden.",
+        "summary": "Apps onthouden wat je leuk vindt en waar je op klikt.",
         "risks": [
-            "Reclames worden hypergericht op jouw interesses (of onzekerheden)",
-            "Apps weten meer over je dan je denkt, zoals humeur of routine",
-            "Je zoekgeschiedenis kan een kwetsbaar beeld van je vormen"
+            "Je krijgt reclames die precies op jou zijn gericht",
+            "Apps weten veel over je gedrag",
+            "Je zoekgeschiedenis kan meer zeggen dan je wilt"
         ],
         "tips": [
-            "Check regelmatig welke interesses platforms aan je profiel koppelen",
-            "Wis je zoekgeschiedenis af en toe",
-            "Gebruik privé- of incognitomodus als je niet wilt dat alles wordt opgeslagen"
+            "Check wat apps over je bijhouden",
+            "Wis je zoekgeschiedenis soms",
+            "Gebruik privé-modus als dat kan"
         ]
     }
 }
