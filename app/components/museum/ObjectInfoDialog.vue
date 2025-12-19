@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { MuseumObjectId } from '~/components/museum/types/museumObjects'
-import { objectLabels, objectDetails } from '~/components/museum/types/museumObjects'
+import {
+    objectLabels,
+    objectDetails,
+    type AgeGroup,
+} from '~/components/museum/types/museumObjects'
+import { usePlayerProfile } from '@/composables/usePlayerProfile'
 import BaseButton from '~/components/ui/BaseButton.vue'
 
 const props = defineProps<{
@@ -14,11 +19,20 @@ const emit = defineEmits<{
 
 const handleClose = () => emit('close')
 
-/* =========================
-   GEOTAG LOGICA
-========================= */
+// leeftijd interface taal
 
-/// GEOTAG ALLEEN BESCHIKBAAR ALLEEN VOOR HET A/B TESTEN VOOR USABILITY TEST.
+const { playerAgeGroup } = usePlayerProfile()
+
+const ageGroup = computed<AgeGroup>(() => {
+    const value = playerAgeGroup.value as AgeGroup | undefined
+    return value ?? '9-11'
+})
+
+const activeDetails = computed(() => {
+    return objectDetails[props.id][ageGroup.value]
+})
+
+// Geotag logica met video
 
 const isGeotag = computed(() => props.id === 'geotag')
 
@@ -27,7 +41,7 @@ const geoLines = [
     'Een geotag kan jouw (bijna) precieze locatie koppelen aan een foto, post of snap.',
     'Zo kunnen anderen zien waar je bent, waar je vaak komt of zelfs waar je woont.',
     'Dit zie je bijvoorbeeld bij apps als Snapchat (Snap Map).',
-    'Hier is een korte video dat uitlegt hoe het werkt!',
+    'Hier is een korte video die laat zien hoe dat werkt.',
 ]
 
 // 0..geoLines.length-1 = tekst
@@ -35,9 +49,7 @@ const geoLines = [
 const step = ref(0)
 const isVideoStep = computed(() => isGeotag.value && step.value === geoLines.length)
 
-/* =========================
-   LOCKY INLINE SVG
-========================= */
+// Locky svg
 
 const lockySvg = ref('')
 
@@ -104,10 +116,7 @@ const destroyPlayer = () => {
     player = null
 }
 
-/* =========================
-   FLOW
-========================= */
-
+// flow geotag
 const next = () => {
     if (!isGeotag.value) {
         handleClose()
@@ -119,7 +128,7 @@ const next = () => {
         return
     }
 
-    // als we hier ooit komen in video-stap → sluiten
+    // video-stap sluiten
     handleClose()
 }
 
@@ -170,7 +179,6 @@ onBeforeUnmount(() => {
                 <div class="locky-float locky-svg w-28 h-28" v-html="lockySvg" />
             </div>
 
-            <!-- CARD -->
             <div class="dialog-pop w-full bg-white shadow-xl px-6 py-7 space-y-4">
                 <h2 class="text-lg font-bold">
                     {{ objectLabels[id] }}
@@ -213,15 +221,12 @@ onBeforeUnmount(() => {
                     </div>
                 </template>
 
-                <!-- =========================
-                     ANDERE OBJECTEN
-                ========================= -->
                 <template v-else>
                     <p class="text-xl text-slate-700">
-                        {{ objectDetails[id].line1 }}
+                        {{ activeDetails.line1 }}
                     </p>
                     <p class="text-xl text-slate-700">
-                        {{ objectDetails[id].line2 }}
+                        {{ activeDetails.line2 }}
                     </p>
 
                     <div class="flex justify-end pt-2">
@@ -236,12 +241,10 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-/* ruimte boven de card zodat Locky niet clipped */
 .dialog-wrap {
     padding-top: 3.25rem;
 }
 
-/* locky hangt bovenop */
 .locky-over {
     position: absolute;
     top: 0;
@@ -253,23 +256,36 @@ onBeforeUnmount(() => {
 
 /* pop animatie */
 @keyframes dialog-pop {
-    0% { transform: translateY(6px) scale(0.96); opacity: 0; }
-    60% { transform: translateY(0) scale(1.02); opacity: 1; }
-    100% { transform: translateY(0) scale(1); opacity: 1; }
+    0% {
+        transform: translateY(6px) scale(0.96);
+        opacity: 0;
+    }
+    60% {
+        transform: translateY(0) scale(1.02);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
 }
 .dialog-pop {
     animation: dialog-pop 0.24s ease-out;
     transform-origin: bottom center;
 }
 
-/* locky float (wrapper, geen conflict met absolute translate) */
 .locky-float {
     transform-origin: 50% 100%;
     animation: locky-float 2.2s ease-in-out infinite;
 }
 @keyframes locky-float {
-    0%, 100% { transform: translateY(0) rotate(-2deg); }
-    50% { transform: translateY(-10px) rotate(2deg); }
+    0%,
+    100% {
+        transform: translateY(0) rotate(-2deg);
+    }
+    50% {
+        transform: translateY(-10px) rotate(2deg);
+    }
 }
 
 /* scoped + v-html => deep */
@@ -278,17 +294,31 @@ onBeforeUnmount(() => {
     transform-origin: center;
 }
 @keyframes look {
-    0%, 100% { transform: translate(0, 0); }
-    25% { transform: translate(3px, 1px); }
-    50% { transform: translate(3px, 1px); }
-    75% { transform: translate(0, -2px); }
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+    25% {
+        transform: translate(3px, 1px);
+    }
+    50% {
+        transform: translate(-3px, 1px);
+    }
+    75% {
+        transform: translate(0, -2px);
+    }
 }
 .locky-svg :deep(.lock-arc) {
     animation: arc-bounce 2.5s ease-in-out infinite;
     transform-origin: center bottom;
 }
 @keyframes arc-bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
 }
 </style>

@@ -34,8 +34,7 @@ const objectInfo = rawObjectInfo as Record<MuseumObjectId, ObjectInfo>
 const objectSteps = rawObjectSteps as Record<MuseumObjectId, ObjectStep[]>
 
 const { selectedObjects } = useMuseumSelection()
-const { playerAgeGroup } = usePlayerProfile()
-const { playerName } = usePlayerProfile()
+const { playerAgeGroup, playerName } = usePlayerProfile()
 
 const hasObjects = computed(() => selectedObjects.value.length > 0)
 
@@ -57,15 +56,10 @@ const ageGroup = computed<AgeGroup>(() => {
 })
 
 // Locky intro (na heist)
-const {
-    step,
-    currentLine,
-    isLastLine,
-    next,
-} = useDialogLines([
-    'Pfoe… dat was even spannend.',
+const { step, currentLine, isLastLine, next } = useDialogLines([
+    'Wow… dat was best wel eng.',
     'De dief is langs geweest, maar ik heb je spullen weer teruggevonden.',
-    'Zullen we kijken wat er uit jouw museum is meegenomen?',
+    'Zullen we kijken wat er uit jouw collectie is meegenomen?',
 ])
 
 // Locky bounce
@@ -109,6 +103,12 @@ const ringSlots = [
     { id: 'slot4', pos: 'top-[27rem] left-[50%] -translate-x-1/2' },
     { id: 'slot5', pos: 'top-[20rem] left-[68%] -translate-x-1/2' },
 ]
+
+// welke objecten al in detail zijn bekeken (voor wiggle)
+const viewedResultObjects = ref<MuseumObjectId[]>([])
+
+const isViewed = (id: MuseumObjectId) =>
+    viewedResultObjects.value.includes(id)
 
 // details selection
 const activeId = ref<MuseumObjectId | null>(null)
@@ -165,6 +165,10 @@ const openObject = (id: MuseumObjectId) => {
     detailPhase.value = 'about'
     showSteps.value = false
     currentStepIndex.value = 0
+
+    if (!viewedResultObjects.value.includes(id)) {
+        viewedResultObjects.value.push(id)
+    }
 }
 
 const closeObject = () => {
@@ -182,7 +186,6 @@ const handleDetailNext = () => {
         detailPhase.value = 'tips'
         return
     }
-
     closeObject()
 }
 
@@ -206,18 +209,18 @@ const toggleSteps = () => {
         <div
             v-if="lockySvg && hasObjects && !activeId"
             :class="[
-                'absolute left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none z-20',
-                phase === 'intro' ? 'top-[35%]' : 'top-[45%]' // positie van locky
-            ]"
+        'absolute left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none z-20',
+        phase === 'intro' ? 'top-[35%]' : 'top-[45%]',
+      ]"
             aria-hidden="true"
         >
             <div class="locky-float">
                 <div
                     :class="[
-                        'locky-bounce',
-                        lockyBounce && 'is-bouncing',
-                        phase === 'objects' ? 'locky-small' : 'locky-large'
-                    ]"
+            'locky-bounce',
+            lockyBounce && 'is-bouncing',
+            phase === 'objects' ? 'locky-small' : 'locky-large',
+          ]"
                 >
                     <div class="locky-svg" v-html="lockySvg" />
                 </div>
@@ -277,22 +280,32 @@ const toggleSteps = () => {
                     v-for="(id, index) in selectedObjects"
                     :key="id"
                     type="button"
-                    class="result-object flex flex-col items-center gap-1 focus:outline-none"
+                    class="result-object focus:outline-none"
                     :class="ringSlots[index]?.pos"
                     @click="openObject(id as MuseumObjectId)"
                 >
-                    <img
-                        :src="imageMap[id as MuseumObjectId]"
-                        class="h-28 w-28 md:h-32 md:w-32 object-contain"
+                    <div
+                        class="flex flex-col items-center gap-1 cursor-pointer
+                   rounded-3xl px-2 py-2
+                   transition-shadow"
+                        :class="[
+              !isViewed(id as MuseumObjectId) ? 'object-wiggle' : '',
+              'hover:shadow-[0_0_22px_rgba(91,95,255,0.85)]',
+            ]"
                     >
-                    <p class="text-xs md:text-sm text-text-on-dark font-semibold text-center">
-                        {{ objectLabels[id as MuseumObjectId] }}
-                    </p>
+                        <img
+                            :src="imageMap[id as MuseumObjectId]"
+                            class="h-28 w-28 md:h-32 md:w-32 object-contain"
+                        >
+                        <p class="text-xs md:text-sm text-text-on-dark font-semibold text-center">
+                            {{ objectLabels[id as MuseumObjectId] }}
+                        </p>
+                    </div>
                 </button>
             </TransitionGroup>
         </div>
 
-        <!-- gedetaileerde scherm -->
+        <!-- gedetailleerde scherm -->
         <Transition name="fade">
             <div
                 v-if="activeId && activeContent"
@@ -304,7 +317,6 @@ const toggleSteps = () => {
                     <div
                         class="flex flex-col md:flex-row items-center md:items-start justify-center gap-6 md:gap-8"
                     >
-
                         <div
                             v-if="lockySvg"
                             class="flex-shrink-0 flex items-start justify-center"
@@ -313,7 +325,6 @@ const toggleSteps = () => {
                                 <div class="locky-svg" v-html="lockySvg" />
                             </div>
                         </div>
-
 
                         <div class="flex-1 flex flex-col gap-4">
                             <div
@@ -332,7 +343,7 @@ const toggleSteps = () => {
 
                                 <div class="space-y-2">
                                     <h3 class="font-bold uppercase tracking-[0.16em] text-text-main">
-                                        Waarom is dit risicovol?
+                                        Waarom kan dit kwetsbaar zijn?
                                     </h3>
                                     <ul class="space-y-2 text-text-main">
                                         <li
@@ -346,7 +357,6 @@ const toggleSteps = () => {
                                     </ul>
                                 </div>
                             </div>
-
 
                             <div
                                 v-else
@@ -443,7 +453,6 @@ const toggleSteps = () => {
                                 </div>
                             </div>
                         </div>
-
 
                         <div class="flex flex-col items-center justify-center gap-2">
                             <img
@@ -596,5 +605,19 @@ const toggleSteps = () => {
 .object-pop-enter-to {
     opacity: 1;
     transform: scale(1) translateY(0);
+}
+
+/* wiggle animatie voor klikbare objecten (inner wrapper) */
+@keyframes object-wiggle {
+    0%   { transform: translateY(0) rotate(0deg); }
+    25%  { transform: translateY(-3px) rotate(-2deg); }
+    50%  { transform: translateY(0) rotate(0deg); }
+    75%  { transform: translateY(-3px) rotate(2deg); }
+    100% { transform: translateY(0) rotate(0deg); }
+}
+
+.object-wiggle {
+    animation: object-wiggle 1.4s ease-in-out infinite;
+    transform-origin: center bottom;
 }
 </style>

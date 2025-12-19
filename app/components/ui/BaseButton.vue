@@ -7,7 +7,7 @@ const props = withDefaults(
         type?: 'button' | 'submit' | 'reset'
         fullWidth?: boolean
         disabled?: boolean
-        pressed?: boolean      // 👈 nieuw
+        pressed?: boolean
     }>(),
     {
         variant: 'primary',
@@ -21,29 +21,31 @@ const props = withDefaults(
 
 const baseClasses =
     'inline-flex items-center justify-center rounded-xl font-medium ' +
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ' +
-    'disabled:opacity-50 disabled:cursor-not-allowed'
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2'
+
+const disabledClasses =
+    'bg-[#C7C7C7] text-[#555] border-none cursor-not-allowed translate-y-0 !shadow-none'
 
 const variantClasses: Record<string, string> = {
     primary: `
-        bg-primary text-white
-        hover:bg-primary-hover active:bg-primary-active
-    `,
+      bg-primary text-white
+      hover:bg-primary-hover active:bg-primary-active
+  `,
     secondary: `
-        bg-white text-text-main border-[0.1rem] border-[#3B3BDB]
-        hover:bg-primary-100
-    `,
+      bg-white text-text-main border-[0.1rem] border-[#3B3BDB]
+      hover:bg-primary-100
+  `,
     outline: `
-        border border-text-main text-text-main
-        hover:bg-primary-100
-    `,
+      border border-text-main text-text-main
+      hover:bg-primary-100
+  `,
     danger: `
-        bg-red-500 text-white
-        hover:bg-red-600 active:bg-red-700
-    `,
+      bg-red-500 text-white
+      hover:bg-red-600 active:bg-red-700
+  `,
     link: `
-        bg-transparent text-primary p-0 h-auto
-    `,
+      bg-transparent text-primary p-0 h-auto
+  `,
 }
 
 const shadowClasses: Record<string, string> = {
@@ -65,34 +67,38 @@ const sizeClasses: Record<string, string> = {
 <template>
     <div
         :class="[
-            'relative inline-block',
-            fullWidth && 'w-full',
-        ]"
+      'relative inline-block',
+      fullWidth && 'w-full',
+    ]"
     >
-        <!-- vaste shadow -->
+        <!-- shadow weg bij disabled -->
         <div
-            v-if="variant !== 'link'"
+            v-if="variant !== 'link' && !disabled"
             :class="[
-                'absolute inset-x-0 top-1 h-full rounded-xl',
-                shadowClasses[variant],
-            ]"
+        'absolute inset-x-0 top-1 h-full rounded-xl',
+        shadowClasses[variant],
+      ]"
         />
 
         <button
             :type="type"
             :disabled="disabled"
             :class="[
-                baseClasses,
-                variantClasses[variant],
-                sizeClasses[size],
-                'relative z-10 transition-transform',
-                fullWidth && 'w-full',
-                // beweging:
-                pressed
-                    ? 'translate-y-1' // vast ingedrukt, op de shadow
-                    : '-translate-y-1 hover:translate-y-0 active:translate-y-1',
-            ]"
-                >
+        baseClasses,
+        sizeClasses[size],
+        fullWidth && 'w-full',
+
+        disabled
+          ? disabledClasses
+          : [
+              variantClasses[variant],
+              'relative z-10 transition-transform',
+              pressed
+                ? 'translate-y-1'
+                : '-translate-y-1 hover:translate-y-0 active:translate-y-1'
+            ]
+      ]"
+        >
             <slot />
         </button>
     </div>

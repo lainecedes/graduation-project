@@ -222,7 +222,7 @@ onMounted(async () => {
     animation: countdown-scale 0.4s ease-out;
 }
 
-/* ===== GORDIJNEN ===== */
+/* gordijn */
 .curtain-wrap {
     position: absolute;
     inset: 0;
@@ -240,12 +240,12 @@ onMounted(async () => {
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.35);
 }
 
-/* linkergordijn begint links */
+/* linkergordijn */
 .curtain-left {
     transform: translateX(0%);
 }
 
-/* rechtergordijn begint rechts */
+/* rechtergordijn */
 .curtain-right {
     transform: translateX(0%);
 }
@@ -277,7 +277,6 @@ onMounted(async () => {
     }
 }
 
-/* ===== Locky animaties ===== */
 .locky {
     transform-origin: 50% 100%;
     animation: locky-float 2.2s ease-in-out infinite;
@@ -289,7 +288,7 @@ onMounted(async () => {
     50% { transform: translateY(-10px) rotate(2deg); }
 }
 
-/* interne SVG */
+/* internal SVG */
 .locky :deep(.eye) {
     animation: look 4s ease-in-out infinite;
     transform-origin: center;

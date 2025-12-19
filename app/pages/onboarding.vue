@@ -30,21 +30,20 @@ const handleIntroNext = () => {
     phase.value = 'name'
 }
 
-// bounce trigger (blijft float behouden)
+// bounce trigger
 const lockyBounce = ref(false)
 
 const triggerLockyBounce = () => {
-    // force re-trigger
     lockyBounce.value = false
     requestAnimationFrame(() => {
         lockyBounce.value = true
         window.setTimeout(() => {
             lockyBounce.value = false
-        }, 480) // match CSS duration
+        }, 480)
     })
 }
 
-// name (samengevoegd)
+// name
 const name = computed({
     get: () => playerName.value,
     set: (val: string) => (playerName.value = val),
@@ -53,10 +52,12 @@ const name = computed({
 const handleNameNext = () => {
     if (!name.value.trim()) return
     triggerLockyBounce()
+    // 🔹 leeftijd altijd resetten voordat we naar age gaan
+    playerAgeGroup.value = null as any
     phase.value = 'age'
 }
 
-// age (samengevoegd)
+// age
 const selectedAgeGroup = computed<AgeGroup | null>({
     get: () => (playerAgeGroup.value as AgeGroup | null) ?? null,
     set: (val) => {
@@ -67,13 +68,12 @@ const selectedAgeGroup = computed<AgeGroup | null>({
 
 const handleSelectAge = (value: AgeGroup) => {
     selectedAgeGroup.value = value
-    triggerLockyBounce() // ✅ bounce bij kiezen
+    triggerLockyBounce()
 }
 
 const handleAgeNext = () => {
     if (!selectedAgeGroup.value) return
     triggerLockyBounce()
-    // delay
     window.setTimeout(() => {
         router.push('/choose')
     }, 140)
@@ -101,9 +101,7 @@ onMounted(async () => {
              pointer-events-none select-none z-20"
             aria-hidden="true"
         >
-            <!-- float wrapper -->
             <div class="locky-float">
-                <!-- bounce wrapper -->
                 <div :class="['locky-bounce', lockyBounce && 'is-bouncing']">
                     <div
                         class="locky-svg
@@ -145,12 +143,10 @@ onMounted(async () => {
             v-if="phase === 'name'"
             class="relative z-10 min-h-screen flex flex-col items-center justify-center px-4"
         >
-            <!-- boven locky -->
             <h2 class="mb-[17rem] text-2xl md:text-3xl font-bold text-text-main text-center">
                 Wat is je naam?
             </h2>
 
-            <!-- onder locky -->
             <div class="w-full max-w-md space-y-4">
                 <div class="space-y-2">
                     <label class="block text-xl font-medium text-slate-800">
@@ -178,7 +174,7 @@ onMounted(async () => {
             </div>
         </div>
 
-        <!--    leeftijdskeuze    -->
+        <!-- leeftijdskeuze -->
         <div
             v-if="phase === 'age'"
             class="relative z-10 min-h-screen flex flex-col items-center justify-center px-4"
@@ -237,7 +233,6 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-/* fade in/out van dialog */
 .dialog-fade-enter-active,
 .dialog-fade-leave-active {
     transition: opacity 0.22s ease-out, transform 0.22s ease-out;
@@ -255,7 +250,6 @@ onMounted(async () => {
     transform: translateY(0) scale(1);
 }
 
-/* pop per line */
 @keyframes dialog-pop {
     0% {
         transform: translateY(6px) scale(0.96);
@@ -270,13 +264,11 @@ onMounted(async () => {
         opacity: 1;
     }
 }
-
 .dialog-pop {
     animation: dialog-pop 0.24s ease-out;
     transform-origin: bottom center;
 }
 
-/* A: float wrapper */
 .locky-float {
     transform-origin: 50% 100%;
     animation: locky-float 2.2s ease-in-out infinite;
@@ -288,7 +280,6 @@ onMounted(async () => {
     50% { transform: translateY(-10px) rotate(2deg); }
 }
 
-/* B: bounce wrapper (kan bovenop float) */
 .locky-bounce.is-bouncing {
     animation: locky-bounce 0.48s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -300,7 +291,6 @@ onMounted(async () => {
     100% { transform: translateY(0) rotate(0deg) scale(1); }
 }
 
-/* svg intern */
 .locky-svg :deep(.eye) {
     animation: look 4s ease-in-out infinite;
     transform-origin: center;
