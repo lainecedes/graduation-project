@@ -6,6 +6,7 @@ import { objectLabels } from '~/components/museum/types/museumObjects'
 const props = defineProps<{
     isHeistActive?: boolean
     isHeistFinished?: boolean
+    viewedIds?: MuseumObjectId[]
 }>()
 
 const emit = defineEmits<{
@@ -41,6 +42,11 @@ const imageMap: Record<MuseumObjectId, string> = {
 const handleClick = (id: MuseumObjectId) => {
     emit('object-click', id)
 }
+
+const isViewed = (id: MuseumObjectId | undefined) => {
+    if (!id) return false
+    return props.viewedIds?.includes(id) ?? false
+}
 </script>
 
 <template>
@@ -70,6 +76,8 @@ const handleClick = (id: MuseumObjectId) => {
                         class="relative group flex items-center justify-center transition-transform transition-opacity"
                         :class="{
               'dataheist-steal': isHeistActive,
+              // schud alleen als: geen heist + nog niet bekeken
+              'object-wiggle': !isHeistActive && !isViewed(selectedObjects[index] as MuseumObjectId),
             }"
                         @click="handleClick(selectedObjects[index] as MuseumObjectId)"
                     >
@@ -112,5 +120,29 @@ const handleClick = (id: MuseumObjectId) => {
 .dataheist-steal {
     animation: dataheist-steal 0.5s ease-in-out forwards;
     animation-delay: 1s;
+}
+
+/* subtiele schud-animatie voor klikbare objecten */
+@keyframes object-wiggle {
+    0% {
+        transform: translateY(0) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-3px) rotate(-2deg);
+    }
+    50% {
+        transform: translateY(0) rotate(0deg);
+    }
+    75% {
+        transform: translateY(-3px) rotate(2deg);
+    }
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
+}
+
+.object-wiggle {
+    animation: object-wiggle 1.4s ease-in-out infinite;
+    transform-origin: center bottom;
 }
 </style>

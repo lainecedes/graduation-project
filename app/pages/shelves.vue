@@ -154,6 +154,7 @@ const handleHeistClose = () => {
             @object-click="handleObjectClick"
             :is-heist-active="isHeistActive"
             :is-heist-finished="isHeistFinished"
+            :viewed-ids="clickedObjects"
         />
 
         <div class="relative z-30 mt-4">

@@ -13,11 +13,13 @@ const phase = ref<'intro' | 'name' | 'age'>('intro')
 
 // intro dialog lines
 const { step, currentLine, isLastLine, next } = useDialogLines([
-    'Psst… ik ben Locky.',
-    'Ik pas op jouw spullen in dit datamuseum.',
-    'Straks ga jij keuzes maken over wat je deelt.',
-    'En daarna laat ik je zien wat er daarna kan gebeuren...',
-    'Eerst je naam, dan kunnen we aan de slag!',
+    'Hey, ik ben Locky!',
+    'Welkom in jouw eigen digitale museum.',
+    'Hier verzamel je stukken over jouw online leven!',
+    'Net zoals op je telefoon en laptop, maar dan op een plek die veilig is en alleen voor jou.',
+    'Ik ben je digitale buddy, en ik zorg dat jouw spullen veilig blijven.',
+    'Ik help je begrijpen wat er achter je online leven schuil gaat.',
+    'Zeg eens, wie ben jij?',
 ])
 
 const handleIntroNext = () => {
@@ -28,7 +30,7 @@ const handleIntroNext = () => {
     phase.value = 'name'
 }
 
-// ✅ bounce trigger (blijft float behouden)
+// bounce trigger (blijft float behouden)
 const lockyBounce = ref(false)
 
 const triggerLockyBounce = () => {
@@ -71,7 +73,7 @@ const handleSelectAge = (value: AgeGroup) => {
 const handleAgeNext = () => {
     if (!selectedAgeGroup.value) return
     triggerLockyBounce()
-    // kleine micro-delay zodat je bounce nog net ziet (mag weg als je dat niet wil)
+    // delay
     window.setTimeout(() => {
         router.push('/choose')
     }, 140)
@@ -92,7 +94,7 @@ onMounted(async () => {
 
 <template>
     <main class="relative min-h-screen bg-background-alt overflow-hidden">
-        <!-- Locky -->
+        <!-- locky -->
         <div
             v-if="lockySvg"
             class="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2
@@ -115,7 +117,7 @@ onMounted(async () => {
             </div>
         </div>
 
-        <!-- ===== intro onboarding ===== -->
+        <!-- intro onboarding -->
         <Transition name="dialog-fade">
             <div
                 v-if="phase === 'intro'"
@@ -129,9 +131,11 @@ onMounted(async () => {
                         {{ currentLine }}
                     </p>
 
-                    <BaseButton type="button" @click="handleIntroNext">
-                        Verder
-                    </BaseButton>
+                    <div class="flex justify-end pt-2">
+                        <BaseButton type="button" @click="handleIntroNext">
+                            Verder
+                        </BaseButton>
+                    </div>
                 </div>
             </div>
         </Transition>
@@ -156,20 +160,21 @@ onMounted(async () => {
                     <input
                         v-model="name"
                         type="text"
-                        class="w-full rounded-full border border-slate-300 px-4 py-2.5
-                   text-sm outline-none focus:border-slate-900 focus:ring-1
-                   focus:ring-slate-900 bg-slate-50"
+                        class="w-full border border-primary px-4 py-2.5
+                   outline-none focus:border-primary-focus focus:ring-1
+                   focus:ring-primary-focus bg-slate-50"
                         placeholder="Typ hier je naam"
                     />
                 </div>
 
-                <BaseButton
-                    type="button"
-                    :disabled="!name.trim()"
-                    @click="handleNameNext"
-                >
-                    Verder
-                </BaseButton>
+                <div class="flex justify-end pt-2">
+                    <BaseButton
+                        :disabled="!name.trim()"
+                        @click="handleNameNext"
+                    >
+                        Verder
+                    </BaseButton>
+                </div>
             </div>
         </div>
 
@@ -184,7 +189,7 @@ onMounted(async () => {
 
             <div class="w-full max-w-xl space-y-4">
                 <p class="mt-[2rem] text-text-main text-xl text-center">
-                    Zo kunnen we het museum beter laten aansluiten bij jouw leeftijd.
+                    Dan kan ik het museum en de uitleg beter laten passen bij jou.
                 </p>
 
                 <div class="grid gap-3 md:grid-cols-3">

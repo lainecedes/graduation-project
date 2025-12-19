@@ -1,76 +1,216 @@
 {
     "chat": {
         "title": "Persoonlijke chat",
-        "summary": "Privéberichten voelen veilig, maar wat je daar stuurt kan snel misgaan. Screenshots of doorgestuurde berichten zijn zo gemaakt.",
-        "risks": [
-            "Iemand kan je berichten doorsturen of screenshotten",
-            "Persoonlijke dingen kunnen tegen je gebruikt worden",
-            "Je kunt onder druk worden gezet met wat je hebt gestuurd"
-        ],
-        "tips": [
-            "Stuur niks wat je niet aan iedereen zou durven laten zien",
-            "Blokkeer mensen die over je grenzen gaan",
-            "Vertrouw niet alleen op verdwijnende berichten"
-        ]
+        "summary": {
+            "9-11": "In privéchats voelt het vaak alsof niemand meekijkt. Maar wat je daar stuurt kan toch worden opgeslagen of doorgestuurd.",
+            "12-15": "Privéberichten voelen veilig, maar wat je daar stuurt kan snel misgaan. Screenshots of doorgestuurde berichten zijn zo gemaakt.",
+            "adults": "Persoonlijke chats geven een inkijk in iemands gevoelens, grenzen en relaties. Als deze uitlekken kan dat veel sociale schade veroorzaken."
+        },
+        "risks": {
+            "9-11": [
+                "Iemand kan je berichten doorsturen of screenshotten.",
+                "Iets wat je stuurt kan bij meer mensen terechtkomen dan je dacht.",
+                "Je kunt je heel rot voelen als iets wordt gedeeld zonder jouw toestemming."
+            ],
+            "12-15": [
+                "Iemand kan je berichten doorsturen of screenshotten.",
+                "Persoonlijke dingen kunnen tegen je gebruikt worden.",
+                "Je kunt onder druk worden gezet met wat je hebt gestuurd."
+            ],
+            "adults": [
+                "Screenshots of doorgestuurde chats kunnen worden gebruikt voor chantage of pesten.",
+                "Kwetsbare of intieme informatie kan blijvend circuleren binnen een groep.",
+                "De jongere kan onder druk worden gezet op basis van oude of uit context gehaalde berichten."
+            ]
+        },
+        "tips": {
+            "9-11": [
+                "Stuur niks wat je niet aan een ouder of leraar durft te laten zien.",
+                "Stop met appen en vraag hulp als iemand je een naar gevoel geeft.",
+                "Vertrouw er niet op dat een bericht echt 'weg' is als het verdwijnt."
+            ],
+            "12-15": [
+                "Stuur niks wat je niet aan iedereen zou durven laten zien.",
+                "Blokkeer mensen die over je grenzen gaan.",
+                "Vertrouw niet alleen op verdwijnende berichten."
+            ],
+            "adults": [
+                "Bespreek met de jongere wat grenzen zijn in chatgesprekken.",
+                "Moedig aan om druk of dreiging direct te melden bij een volwassene.",
+                "Leg uit dat ‘verdwijnende’ berichten vaak toch opgeslagen kunnen blijven."
+            ]
+        }
     },
 
     "passport": {
-        "title": "Paspoortgegevens",
-        "summary": "Je paspoort laat precies zien wie je bent. Als dit uitlekt, kan iemand zich voordoen als jou.",
-        "risks": [
-            "Iemand kan dingen doen in jouw naam",
-            "Je gegevens kunnen op verkeerde plekken terechtkomen",
-            "Misbruik wordt makkelijker met extra info erbij"
-        ],
-        "tips": [
-            "Zet nooit je paspoort online",
-            "Stuur kopieën alleen als het echt moet",
-            "Vraag hulp als je twijfelt"
-        ]
+        "title": "Identiteitsgegevens",
+        "summary": {
+            "9-11": "Dingen als je naam, achternaam en geboortedatum lijken misschien niet spannend, maar samen laten ze precies zien wie jij bent.",
+            "12-15": "Losse gegevens zoals naam, geboortedatum en adres lijken onschuldig, maar samen vormen ze een compleet plaatje van jouw identiteit.",
+            "adults": "Identiteitsgegevens (naam, geboortedatum, adres, documentnummers) zijn bouwstenen van een persoonsprofiel. Als deze uitlekken vergroot dat de kans op misbruik of identiteitsfraude."
+        },
+        "risks": {
+            "9-11": [
+                "Iemand kan zeggen dat hij jij is.",
+                "Je naam, geboortedatum en adres kunnen op verkeerde plekken terechtkomen.",
+                "Met extra info erbij wordt misbruik makkelijker."
+            ],
+            "12-15": [
+                "Iemand kan zich voordoen als jou.",
+                "In combinatie met andere gegevens ben je makkelijker te volgen.",
+                "Je gegevens kunnen lang blijven rondzweven in apps of chats."
+            ],
+            "adults": [
+                "Gegevens kunnen gebruikt worden voor identiteitsfraude of het openen van accounts.",
+                "Door koppeling met andere databronnen ontstaat een volledig profiel van de jongere.",
+                "Verspreide identiteitsgegevens zijn lastig terug te halen of te beperken."
+            ]
+        },
+        "tips": {
+            "9-11": [
+                "Deel je volledige naam, geboortedatum of adres niet zomaar online.",
+                "Vraag een volwassene om hulp als iemand naar je persoonlijke gegevens vraagt.",
+                "Zet geen screenshots van formulieren of schoolpasjes online."
+            ],
+            "12-15": [
+                "Denk na voordat je naam, geboortedatum of adres overal invoert.",
+                "Stuur foto’s van documenten niet via groepschats.",
+                "Vraag hulp als iemand om gegevens vraagt die niet goed voelt."
+            ],
+            "adults": [
+                "Leg uit waarom bepaalde identiteitsvelden extra gevoelig zijn.",
+                "Bekijk samen profielen en verwijder overbodige persoonsgegevens.",
+                "Bespreek wanneer delen van gegevens wél nodig is en hoe veilig te doen."
+            ]
+        }
     },
 
     "photo": {
         "title": "Privéfoto",
-        "summary": "Gevoelige foto’s kun je niet meer terughalen als ze zijn doorgestuurd.",
-        "risks": [
-            "Foto’s kunnen zonder toestemming worden gedeeld",
-            "Iemand kan je ermee bedreigen",
-            "Foto’s kunnen lang online blijven"
-        ],
-        "tips": [
-            "Stuur geen foto’s waar je later spijt van kunt krijgen",
-            "Let op wat er op de achtergrond te zien is",
-            "Praat met iemand als je twijfelt"
-        ]
+        "summary": {
+            "9-11": "Privéfoto’s kunnen intiem zijn, maar ook gewoon foto's waar je gezicht goed op staat. Als iemand ze doorstuurt kun je ze niet meer terughalen.",
+            "12-15": "Privéfoto’s kunnen intiem zijn, maar ook gewone herkenbare foto's. Als die worden gedeeld verlies je de controle over wie ze ziet.",
+            "adults": "Privébeelden variëren van expliciete tot herkenbare portretfoto’s. Als deze uitlekken kan dat grote sociale en emotionele gevolgen hebben."
+        },
+        "risks": {
+            "9-11": [
+                "Foto’s kunnen zonder toestemming worden gedeeld.",
+                "Je kunt ermee worden gepest.",
+                "De foto kan lang blijven bestaan, ook als jij hem verwijdert."
+            ],
+            "12-15": [
+                "Intieme of herkenbare foto's kunnen worden doorgestuurd.",
+                "Iemand kan je onder druk zetten met beelden.",
+                "Beelden kunnen lang online blijven rondgaan."
+            ],
+            "adults": [
+                "Beelden kunnen worden gebruikt voor chantage of druk.",
+                "Eenmaal gedeelde foto's zijn niet meer volledig terug te halen.",
+                "Gelekte beelden kunnen langdurig vertrouwen en veiligheid schaden."
+            ]
+        },
+        "tips": {
+            "9-11": [
+                "Stuur geen foto’s die je buikpijn zouden geven als anderen ze zien.",
+                "Let op wat er op de achtergrond staat.",
+                "Praat met een volwassene als iemand om rare foto's vraagt."
+            ],
+            "12-15": [
+                "Denk na voordat je een foto stuurt waar je later spijt van krijgt.",
+                "Wees voorzichtig met foto’s waar je herkenbaar op staat.",
+                "Praat met iemand als je druk voelt om iets te sturen."
+            ],
+            "adults": [
+                "Praat open met de jongere over druk om beelden te delen.",
+                "Benadruk dat de jongere nooit schuld draagt bij uitlekken.",
+                "Ken de routes voor ondersteuning en melding bij online beeldmisbruik."
+            ]
+        }
     },
 
     "geotag": {
         "title": "Locatie",
-        "summary": "Je locatie laat zien waar je bent en waar je vaak komt.",
-        "risks": [
-            "Mensen kunnen zien waar je woont of naar school gaat",
-            "Je dag wordt voorspelbaar",
-            "Vreemden kunnen je makkelijker volgen"
-        ],
-        "tips": [
-            "Zet locatie uit in apps",
-            "Post foto’s pas later",
-            "Deel locatie alleen met mensen die je kent"
-        ]
+        "summary": {
+            "9-11": "Locatie laat zien waar jij bent. Als anderen dat zien, weten ze waar je vaak komt.",
+            "12-15": "Je locatie laat zien waar je bent en waar je vaak komt.",
+            "adults": "Locatiegegevens laten patronen zien: vaste routes, huis, school en sociale plekken van de jongere."
+        },
+        "risks": {
+            "9-11": [
+                "Mensen kunnen zien waar je woont of naar school gaat.",
+                "Iemand kan weten waar je vaak bent.",
+                "Vreemden kunnen je makkelijker volgen."
+            ],
+            "12-15": [
+                "Mensen kunnen zien waar je woont of naar school gaat.",
+                "Je dag wordt voorspelbaar.",
+                "Vreemden kunnen je makkelijker volgen."
+            ],
+            "adults": [
+                "Locatiepatronen kunnen gebruikt worden voor stalking of ongewenst contact.",
+                "Koppeling aan foto's maakt de jongere voorspelbaar.",
+                "Derden kunnen gevoelige plekken herkennen."
+            ]
+        },
+        "tips": {
+            "9-11": [
+                "Vraag een volwassene om je te helpen locatie uit te zetten.",
+                "Post foto's liever niet live.",
+                "Deel je locatie alleen met mensen die je kent."
+            ],
+            "12-15": [
+                "Zet locatie uit waar het niet nodig is.",
+                "Post foto’s pas later.",
+                "Deel locatie alleen met mensen die je kent."
+            ],
+            "adults": [
+                "Loop privacy instellingen door met de jongere.",
+                "Leg uit waarom live locatie risico’s heeft.",
+                "Maak afspraken over locatie delen."
+            ]
+        }
     },
 
     "profile": {
         "title": "Interesseprofiel",
-        "summary": "Apps onthouden wat je leuk vindt en waar je op klikt.",
-        "risks": [
-            "Je krijgt reclames die precies op jou zijn gericht",
-            "Apps weten veel over je gedrag",
-            "Je zoekgeschiedenis kan meer zeggen dan je wilt"
-        ],
-        "tips": [
-            "Check wat apps over je bijhouden",
-            "Wis je zoekgeschiedenis soms",
-            "Gebruik privé-modus als dat kan"
-        ]
+        "summary": {
+            "9-11": "Apps onthouden wat je leuk vindt en waar je op klikt. Zo leren ze jou steeds beter kennen.",
+            "12-15": "Apps onthouden wat je leuk vindt en waar je op klikt.",
+            "adults": "Platforms bouwen een profiel op van interesses, gedrag en aandachtspatronen."
+        },
+        "risks": {
+            "9-11": [
+                "Je krijgt steeds meer van hetzelfde te zien.",
+                "Apps weten goed wat jij leuk vindt.",
+                "Reclames kunnen gericht op jou zijn."
+            ],
+            "12-15": [
+                "Je krijgt reclames die precies op jou zijn gericht.",
+                "Apps weten veel over je gedrag.",
+                "Je zoekgeschiedenis kan meer zeggen dan je wilt."
+            ],
+            "adults": [
+                "Gerichte advertenties kunnen kwetsbaarheden uitbuiten.",
+                "Een bubbel kan het wereldbeeld van jongeren beïnvloeden.",
+                "Zoekgeschiedenis kan gevoelige thema’s onthullen."
+            ]
+        },
+        "tips": {
+            "9-11": [
+                "Vraag een volwassene om mee te kijken.",
+                "Klik niet overal op.",
+                "Vertel het als je gekke advertenties ziet."
+            ],
+            "12-15": [
+                "Check wat apps over je bijhouden.",
+                "Wis soms je zoekgeschiedenis.",
+                "Gebruik privé-modus als dat kan."
+            ],
+            "adults": [
+                "Bespreek met jongeren dat content gestuurd is.",
+                "Bekijk instellingen samen.",
+                "Stimuleer kritisch kijken naar advertenties."
+            ]
+        }
     }
 }

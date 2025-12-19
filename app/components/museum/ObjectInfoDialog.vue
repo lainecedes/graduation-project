@@ -27,15 +27,13 @@ const geoLines = [
     'Een geotag kan jouw (bijna) precieze locatie koppelen aan een foto, post of snap.',
     'Zo kunnen anderen zien waar je bent, waar je vaak komt of zelfs waar je woont.',
     'Dit zie je bijvoorbeeld bij apps als Snapchat (Snap Map).',
-    'Kijk even deze video, daarna kun je verder.',
+    'Hier is een korte video dat uitlegt hoe het werkt!',
 ]
 
 // 0..geoLines.length-1 = tekst
 // geoLines.length = video
 const step = ref(0)
 const isVideoStep = computed(() => isGeotag.value && step.value === geoLines.length)
-
-const videoDone = ref(false)
 
 /* =========================
    LOCKY INLINE SVG
@@ -53,7 +51,6 @@ const loadLocky = async () => {
 }
 
 onMounted(() => {
-    // alleen nodig voor geotag
     if (isGeotag.value) loadLocky()
 })
 
@@ -99,12 +96,6 @@ const initYouTube = async () => {
             modestbranding: 1,
             playsinline: 1,
         },
-        events: {
-            onStateChange: (e: any) => {
-                // 0 = ended
-                if (e.data === 0) videoDone.value = true
-            },
-        },
     })
 }
 
@@ -128,7 +119,8 @@ const next = () => {
         return
     }
 
-    if (videoDone.value) handleClose()
+    // als we hier ooit komen in video-stap → sluiten
+    handleClose()
 }
 
 const back = () => {
@@ -138,7 +130,6 @@ const back = () => {
     step.value -= 1
 
     if (step.value < geoLines.length) {
-        videoDone.value = false
         destroyPlayer()
     }
 }
@@ -151,15 +142,12 @@ watch(
     () => props.id,
     () => {
         step.value = 0
-        videoDone.value = false
         destroyPlayer()
     },
 )
 
-// init player pas als videostap in DOM staat
 watch(isVideoStep, async (val) => {
     if (!val) return
-    videoDone.value = false
     await nextTick()
     await initYouTube()
 })
@@ -219,13 +207,9 @@ onBeforeUnmount(() => {
                             Terug
                         </BaseButton>
 
-                        <BaseButton v-if="videoDone" type="button" @click="handleClose">
+                        <BaseButton type="button" @click="handleClose">
                             Ga verder
                         </BaseButton>
-
-                        <span v-else class="text-xs text-slate-500">
-              Kijk de video af om verder te gaan
-            </span>
                     </div>
                 </template>
 
@@ -233,10 +217,10 @@ onBeforeUnmount(() => {
                      ANDERE OBJECTEN
                 ========================= -->
                 <template v-else>
-                    <p class="text-sm text-slate-700">
+                    <p class="text-xl text-slate-700">
                         {{ objectDetails[id].line1 }}
                     </p>
-                    <p class="text-sm text-slate-700">
+                    <p class="text-xl text-slate-700">
                         {{ objectDetails[id].line2 }}
                     </p>
 
@@ -296,7 +280,7 @@ onBeforeUnmount(() => {
 @keyframes look {
     0%, 100% { transform: translate(0, 0); }
     25% { transform: translate(3px, 1px); }
-    50% { transform: translate(-3px, 1px); }
+    50% { transform: translate(3px, 1px); }
     75% { transform: translate(0, -2px); }
 }
 .locky-svg :deep(.lock-arc) {
