@@ -37,8 +37,8 @@ const activeDetails = computed(() => {
 const isGeotag = computed(() => props.id === 'geotag')
 
 const geoLines = [
-    'Dit is een geotag.',
-    'Een geotag kan jouw (bijna) precieze locatie koppelen aan een foto, post of snap.',
+    'Dit is een locatiepin.',
+    'Een locatiepin kan jouw (bijna) precieze locatie koppelen aan een foto, post of snap.',
     'Zo kunnen anderen zien waar je bent, waar je vaak komt of zelfs waar je woont.',
     'Dit zie je bijvoorbeeld bij apps als Snapchat (Snap Map).',
     'Hier is een korte video die laat zien hoe dat werkt.',
