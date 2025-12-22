@@ -42,33 +42,70 @@ const handleClick = () => {
 </script>
 
 <template>
-        <Transition name="fade">
-            <div
-                v-if="visible"
-                class="absolute inset-0 z-30 flex items-end justify-center px-4"
-                :class="paddingClass"
-            >
-                <div class="relative w-full" :class="maxWidthClass">
-                    <div :key="step" class="bg-white shadow-xl px-6 py-8 space-y-4">
+    <Transition name="dialog-fade" appear>
+        <div
+            v-if="visible"
+            class="absolute inset-0 z-30 flex items-end justify-center px-4"
+            :class="paddingClass"
+        >
+            <div class="relative w-full" :class="maxWidthClass">
+                <div :key="step" class="dialog-pop bg-white shadow-xl px-6 py-8 space-y-4">
+                    <slot name="mascot" />
 
-                        <!-- locky slot -->
-                        <slot name="mascot" />
+                    <h3 class="uppercase text-primary font-semibold">
+                        {{ title }}
+                    </h3>
 
-                        <h3 class="uppercase text-primary font-semibold">
-                            {{ title }}
-                        </h3>
+                    <p class="text-text-main text-xl">
+                        {{ currentLine }}
+                    </p>
 
-                        <p class="text-text-main text-xl">
-                            {{ currentLine }}
-                        </p>
-
-                        <div class="flex justify-end">
-                            <BaseButton type="button" @click="handleClick">
-                                {{ buttonLabel }}
-                            </BaseButton>
-                        </div>
+                    <div class="flex justify-end">
+                        <BaseButton type="button" @click="handleClick">
+                            {{ buttonLabel }}
+                        </BaseButton>
                     </div>
                 </div>
             </div>
-        </Transition>
+        </div>
+    </Transition>
 </template>
+
+<style scoped>
+.dialog-fade-enter-active,
+.dialog-fade-leave-active {
+    transition: opacity 0.22s ease-out, transform 0.22s ease-out;
+}
+
+.dialog-fade-enter-from,
+.dialog-fade-leave-to {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+}
+
+.dialog-fade-enter-to,
+.dialog-fade-leave-from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+@keyframes dialog-pop {
+    0% {
+        transform: translateY(6px) scale(0.96);
+        opacity: 0;
+    }
+    60% {
+        transform: translateY(0) scale(1.02);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.dialog-pop {
+    animation: dialog-pop 0.24s ease-out;
+    transform-origin: bottom center;
+}
+</style>

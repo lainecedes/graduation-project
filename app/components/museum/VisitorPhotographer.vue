@@ -82,7 +82,7 @@ const handleNext = () => {
             <div class="dialog-wrap relative w-full max-w-xl">
                 <div
                     :key="step"
-                    class="dialog-pop w-full bg-white shadow-xl px-6 py-7 space-y-4 rounded-3xl"
+                    class="dialog-pop w-full bg-white shadow-xl px-6 py-7 space-y-4"
                 >
                     <h3 class="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
                         Bezoeker met camera

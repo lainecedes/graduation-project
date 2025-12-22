@@ -15,7 +15,7 @@ import ResultDetailModal from '~/components/museum/ResultDetailModal.vue'
 import rawObjectInfo from '@/data/objectInfo.json'
 import rawObjectSteps from '@/data/objectSteps.json'
 
-// ✅ extracted types + constants
+// extracted types + constants
 import type { AgeGroup, ObjectInfo, ObjectStep } from '~/components/museum/types/resultTypes'
 import { imageMap, hintLinesByAge } from '~/components/museum/types/resultConstants'
 import { privacyDictionary } from '~/components/museum/types/privacyDictionary'
@@ -253,13 +253,13 @@ const tipsText = computed(() => activeContent.value?.tips ?? [])
         </div>
 
         <!-- intro gedeelte -->
-        <Transition name="fade">
+        <Transition name="dialog-fade" appear>
             <div
                 v-if="phase === 'intro' && hasObjects"
                 class="absolute inset-0 z-30 flex items-end justify-center px-4 py-6"
             >
                 <div class="relative w-full max-w-xl">
-                    <div :key="step" class="bg-white shadow-xl px-6 py-8 space-y-4">
+                    <div :key="step" class="dialog-pop bg-white shadow-xl px-6 py-8 space-y-4">
                         <h3 class="uppercase text-primary font-semibold">
                             Locky
                         </h3>
@@ -356,13 +356,41 @@ const tipsText = computed(() => activeContent.value?.tips ?? [])
 </template>
 
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.25s ease;
+.dialog-fade-enter-active,
+.dialog-fade-leave-active {
+    transition: opacity 0.22s ease-out, transform 0.22s ease-out;
 }
-.fade-enter-from,
-.fade-leave-to {
+
+.dialog-fade-enter-from,
+.dialog-fade-leave-to {
     opacity: 0;
+    transform: translateY(12px) scale(0.96);
+}
+
+.dialog-fade-enter-to,
+.dialog-fade-leave-from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+@keyframes dialog-pop {
+    0% {
+        transform: translateY(6px) scale(0.96);
+        opacity: 0;
+    }
+    60% {
+        transform: translateY(0) scale(1.02);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.dialog-pop {
+    animation: dialog-pop 0.24s ease-out;
+    transform-origin: bottom center;
 }
 
 /* "fake tooltip" look */
