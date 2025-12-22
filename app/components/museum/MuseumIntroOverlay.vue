@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useDialogLines } from '@/composables/useDialogLines'
 import { usePlayerProfile } from '@/composables/usePlayerProfile'
 import BaseButton from '~/components/ui/BaseButton.vue'
+import DialogHint from "~/components/ui/DialogHint.vue";
 
 type AgeGroup = '9-11' | '12-15' | 'adults'
 
@@ -18,23 +19,45 @@ const introLinesByAge: Record<AgeGroup, string[]> = {
         'Goede keuzes! Deze spullen zijn super belangrijk voor jou.',
         'In jouw museum liggen ze veilig bij elkaar.',
         'Maar… niet iedereen online gaat voorzichtig om met spullen van anderen.',
-        'Zullen we samen kijken wat er gebeurt als we jouw museum openen?'
+        'Zullen we samen kijken wat er gebeurt als we jouw museum openen?',
     ],
     '12-15': [
         'Sterke keuzes. Dit zijn allemaal dingen die veel over jou zeggen.',
         'In jouw museum liggen ze nu netjes bij elkaar.',
         'Maar online gaat niet iedereen even zorgvuldig om met andermans gegevens…',
-        'Zullen we kijken wat er gebeurt als je het museum opent?'
+        'Zullen we kijken wat er gebeurt als je het museum opent?',
     ],
     adults: [
         'Mooi, dit zijn gevoelige onderdelen van iemands online leven.',
         'In het museum brengen we ze samen op één plek.',
         'Maar online worden dit soort gegevens lang niet altijd veilig behandeld.',
-        'Laten we zien wat er gebeurt als het museum open gaat.'
+        'Laten we zien wat er gebeurt als het museum open gaat.',
+    ],
+}
+
+const hintLinesByAge: Record<AgeGroup, string[]> = {
+    '9-11': [
+        'Tadaaaaa, je museum is open!',
+        'Zie je dat sommige spullen een beetje wiebelen?',
+        'Je kan dus op ze klikken!',
+        'Klik er eentje aan om meer te ontdekken.',
+    ],
+    '12-15': [
+        'Yes, je museum is open!',
+        'Sommige objecten bewegen een beetje, zie je dat?',
+        'Je kan dus op ze klikken!',
+        'Klik op eentje om te zien wat er kan gebeuren.',
+    ],
+    adults: [
+        'Het museum is nu open.',
+        'Sommige objecten bewegen subtiel.',
+        'Dat is een hint: ze zijn klikbaar.',
+        'Klik op een object om details en risico’s te bekijken.',
     ],
 }
 
 const introLines = introLinesByAge[ageGroup.value]
+const hintLines = hintLinesByAge[ageGroup.value]
 
 const props = defineProps<{
     playerName: string
@@ -44,6 +67,8 @@ const emit = defineEmits<{
     (e: 'opened'): void
 }>()
 
+const phase = ref<'intro' | 'hint'>('intro')
+
 const isCountingDown = ref(false)
 const countdown = ref(3)
 let countdownTimer: number | null = null
@@ -52,16 +77,33 @@ let countdownTimer: number | null = null
 const showCurtain = ref(true)
 const isCurtainOpening = ref(false)
 
+// intro dialog
 const {
-    step,
-    currentLine,
-    isLastLine,
-    next,
+    step: introStep,
+    currentLine: introCurrentLine,
+    isLastLine: introIsLastLine,
+    next: introNext,
 } = useDialogLines(introLines)
 
-const primaryLabel = computed(() =>
-    isLastLine.value ? 'Ja, open mijn museum!' : 'Verder',
+// hint dialog
+const {
+    step: hintStep,
+    currentLine: hintCurrentLine,
+    isLastLine: hintIsLastLine,
+    next: hintNext,
+} = useDialogLines(hintLines)
+
+const introPrimaryLabel = computed(() =>
+    introIsLastLine.value ? 'Ja, open mijn museum!' : 'Verder',
 )
+
+const hintPrimaryLabel = computed(() =>
+    hintIsLastLine.value ? 'Oké, ik ga kijken' : 'Verder',
+)
+
+const handleHintDone = () => {
+    emit('opened')
+}
 
 const startCountdown = () => {
     if (isCountingDown.value) return
@@ -77,26 +119,33 @@ const startCountdown = () => {
                 clearInterval(countdownTimer)
                 countdownTimer = null
             }
-            isCountingDown.value = false
 
-            // start gordijn animatiee
+            isCountingDown.value = false
             isCurtainOpening.value = true
 
-            // wacht tot animatie klaar is
             window.setTimeout(() => {
                 showCurtain.value = false
-                emit('opened')
+                isCurtainOpening.value = false
+                phase.value = 'hint'
             }, 900)
         }
     }, 1000)
 }
 
-const handlePrimaryClick = () => {
-    if (!isLastLine.value) {
-        next()
+const handleIntroClick = () => {
+    if (!introIsLastLine.value) {
+        introNext()
         return
     }
     startCountdown()
+}
+
+const handleHintClick = () => {
+    if (!hintIsLastLine.value) {
+        hintNext()
+        return
+    }
+    emit('opened')
 }
 
 // SVG Locky
@@ -114,36 +163,29 @@ onMounted(async () => {
 
 <template>
     <Transition name="dialog-fade">
-        <div
-            v-if="true"
-            class="absolute inset-0 z-40 flex items-end justify-center px-4 pb-6"
-        >
-            <!-- Gordijn CSS - pas later aan naar kleur pattern -->
-            <div
-                v-if="showCurtain"
-                class="curtain-wrap pointer-events-none"
-            >
+        <div class="absolute inset-0 z-40 flex items-end justify-center px-4 pb-6">
+            <!-- gordijn -->
+            <div v-if="showCurtain" class="curtain-wrap pointer-events-none">
                 <div
                     :class="[
             'curtain-panel curtain-left',
-            isCurtainOpening && 'curtain-open-left'
+            isCurtainOpening && 'curtain-open-left',
           ]"
                 />
                 <div
                     :class="[
             'curtain-panel curtain-right',
-            isCurtainOpening && 'curtain-open-right'
+            isCurtainOpening && 'curtain-open-right',
           ]"
                 />
             </div>
 
-            <!-- dialoog -->
+            <!-- intro dialoog -->
             <div
-                v-if="!isCountingDown && !isCurtainOpening"
-                :key="step"
-                class="dialog-pop relative z-10 w-full max-w-xl bg-white shadow-xl px-6 py-8 space-y-4 rounded-3xl"
+                v-if="phase === 'intro' && !isCountingDown && !isCurtainOpening"
+                :key="introStep"
+                class="dialog-pop relative z-10 w-full max-w-xl bg-white shadow-xl px-6 py-8 space-y-4"
             >
-                <!-- locky mascotte-->
                 <div
                     v-if="lockySvg"
                     class="locky absolute bottom-[80%] -left-6 w-40 h-40 pointer-events-none select-none"
@@ -152,30 +194,49 @@ onMounted(async () => {
                     <div class="locky-svg" v-html="lockySvg" />
                 </div>
 
-                <h3 class="uppercase text-primary font-semibold">
-                    Locky
-                </h3>
+                <h3 class="uppercase text-primary font-semibold">Locky</h3>
 
                 <p class="text-text-main text-xl">
-                    {{ currentLine }}
+                    {{ introCurrentLine }}
                 </p>
 
                 <div class="flex justify-end">
-                    <BaseButton type="button" @click="handlePrimaryClick">
-                        {{ primaryLabel }}
+                    <BaseButton type="button" @click="handleIntroClick">
+                        {{ introPrimaryLabel }}
                     </BaseButton>
                 </div>
             </div>
 
-            <!--      countdown     -->
-            <div
-                v-if="isCountingDown && countdown > 0"
-                class="absolute inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+            <DialogHint
+                :visible="phase === 'hint' && !isCountingDown && !isCurtainOpening"
+                :lines="hintLines"
+                padding-class="pb-6"
+                @close="handleHintDone"
             >
-                <div class="text-[120px] font-extrabold text-white drop-shadow-lg animate-countdown-scale">
-                    {{ countdown }}
+                <template #mascot>
+                    <div
+                        v-if="lockySvg"
+                        class="locky absolute bottom-[80%] -left-6 w-40 h-40 pointer-events-none select-none"
+                        aria-hidden="true"
+                    >
+                        <div class="locky-svg" v-html="lockySvg" />
+                    </div>
+                </template>
+            </DialogHint>
+
+            <!-- countdown -->
+            <Teleport to="body">
+                <div
+                    v-if="isCountingDown && countdown > 0"
+                    class="fixed inset-0 z-[999] flex items-center justify-center bg-black/40 backdrop-blur-sm"
+                >
+                    <div
+                        class="text-[120px] font-extrabold text-white drop-shadow-lg animate-countdown-scale"
+                    >
+                        {{ countdown }}
+                    </div>
                 </div>
-            </div>
+            </Teleport>
         </div>
     </Transition>
 </template>

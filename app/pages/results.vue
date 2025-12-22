@@ -5,30 +5,20 @@ import { useDialogLines } from '@/composables/useDialogLines'
 import { usePlayerProfile } from '@/composables/usePlayerProfile'
 import type { MuseumObjectId } from '~/components/museum/types/museumObjects'
 import { objectLabels } from '~/components/museum/types/museumObjects'
-import BaseButton from '~/components/ui/BaseButton.vue'
 
-// JSON data voor inhoud
+import BaseButton from '~/components/ui/BaseButton.vue'
+import TooltipDictionary from '~/components/ui/TooltipDictionary.vue'
+import DialogHint from '~/components/ui/DialogHint.vue'
+import ResultDetailModal from '~/components/museum/ResultDetailModal.vue'
+
+// JSON data
 import rawObjectInfo from '@/data/objectInfo.json'
 import rawObjectSteps from '@/data/objectSteps.json'
 
-// leeftijdsgroepen
-type AgeGroup = '9-11' | '12-15' | 'adults'
-
-type ObjectInfo = {
-    title: string
-    summary: Record<AgeGroup, string>
-    risks: Record<AgeGroup, string[]>
-    tips: Record<AgeGroup, string[]>
-}
-
-type StepMediaType = 'image' | 'video' | 'icon'
-
-type ObjectStep = {
-    title: string
-    description: string
-    mediaType: StepMediaType
-    mediaSrc: string
-}
+// ✅ extracted types + constants
+import type { AgeGroup, ObjectInfo, ObjectStep } from '~/components/museum/types/resultTypes'
+import { imageMap, hintLinesByAge } from '~/components/museum/types/resultConstants'
+import { privacyDictionary } from '~/components/museum/types/privacyDictionary'
 
 const objectInfo = rawObjectInfo as Record<MuseumObjectId, ObjectInfo>
 const objectSteps = rawObjectSteps as Record<MuseumObjectId, ObjectStep[]>
@@ -38,18 +28,14 @@ const { playerAgeGroup, playerName } = usePlayerProfile()
 
 const hasObjects = computed(() => selectedObjects.value.length > 0)
 
-const imageMap: Record<MuseumObjectId, string> = {
-    chat: '/objects/chat.svg',
-    passport: '/objects/passport.svg',
-    photo: '/objects/privefoto.svg',
-    geotag: '/objects/geotag.svg',
-    profile: '/objects/interesse-profiel.svg',
-}
-
 type Phase = 'intro' | 'objects'
 const phase = ref<Phase>('intro')
 
-// leeftijd afleiden
+// hint overlay bovenop objects
+const showHintDialog = ref(false)
+let hintOpenTimer: number | null = null
+
+// leeftijd
 const ageGroup = computed<AgeGroup>(() => {
     const value = playerAgeGroup.value as AgeGroup | undefined
     return value ?? '9-11'
@@ -61,6 +47,25 @@ const { step, currentLine, isLastLine, next } = useDialogLines([
     'De dief is langs geweest, maar ik heb je spullen weer teruggevonden.',
     'Zullen we kijken wat er uit jouw collectie is meegenomen?',
 ])
+
+// hint dialoog (leeftijd afhankelijk)
+const hintLines = computed(() => hintLinesByAge[ageGroup.value])
+
+const {
+    step: hintStep,
+    currentLine: hintCurrentLine,
+    isLastLine: hintIsLastLine,
+    next: hintNext,
+} = useDialogLines(hintLines.value)
+
+// hint flow
+const handleHintClick = () => {
+    if (!hintIsLastLine.value) {
+        hintNext()
+        return
+    }
+    showHintDialog.value = false
+}
 
 // Locky bounce
 const lockyBounce = ref(false)
@@ -80,8 +85,26 @@ const handleNext = () => {
         next()
         return
     }
+
+    // eerst objecten tonen
     phase.value = 'objects'
     triggerLockyBounce()
+
+    // hint pas openen als locky in midden staat
+    if (hintOpenTimer) {
+        clearTimeout(hintOpenTimer)
+        hintOpenTimer = null
+    }
+
+    showHintDialog.value = false
+
+    hintOpenTimer = window.setTimeout(() => {
+        // alleen tonen als er geen detail open is
+        if (!activeId.value) {
+            showHintDialog.value = true
+            triggerLockyBounce()
+        }
+    }, 900)
 }
 
 // locky svg
@@ -102,18 +125,16 @@ const ringSlots = [
     { id: 'slot3', pos: 'top-[6rem] left-[60%] -translate-x-1/2' },
     { id: 'slot4', pos: 'top-[27rem] left-[50%] -translate-x-1/2' },
     { id: 'slot5', pos: 'top-[20rem] left-[68%] -translate-x-1/2' },
-]
+] as const
 
 // welke objecten al in detail zijn bekeken (voor wiggle)
 const viewedResultObjects = ref<MuseumObjectId[]>([])
-
-const isViewed = (id: MuseumObjectId) =>
-    viewedResultObjects.value.includes(id)
+const isViewed = (id: MuseumObjectId) => viewedResultObjects.value.includes(id)
 
 // details selection
 const activeId = ref<MuseumObjectId | null>(null)
 
-// detail fases 1 = over en risico's, 2 = tips en stappen
+// detail fases 1 = over en risico's 2 = tips en stappen
 type DetailPhase = 'about' | 'tips'
 const detailPhase = ref<DetailPhase>('about')
 const showSteps = ref(false)
@@ -148,14 +169,11 @@ const currentStep = computed<ObjectStep | null>(() => {
 })
 
 const canPrevStep = computed(() => currentStepIndex.value > 0)
-const canNextStep = computed(
-    () => currentStepIndex.value < activeSteps.value.length - 1,
-)
+const canNextStep = computed(() => currentStepIndex.value < activeSteps.value.length - 1)
 
 const goPrevStep = () => {
     if (canPrevStep.value) currentStepIndex.value -= 1
 }
-
 const goNextStep = () => {
     if (canNextStep.value) currentStepIndex.value += 1
 }
@@ -165,6 +183,8 @@ const openObject = (id: MuseumObjectId) => {
     detailPhase.value = 'about'
     showSteps.value = false
     currentStepIndex.value = 0
+
+    showHintDialog.value = false
 
     if (!viewedResultObjects.value.includes(id)) {
         viewedResultObjects.value.push(id)
@@ -177,9 +197,7 @@ const closeObject = () => {
 }
 
 // detail knoppen
-const primaryDetailLabel = computed(() => {
-    return detailPhase.value === 'about' ? 'Verder' : 'Klaar'
-})
+const primaryDetailLabel = computed(() => (detailPhase.value === 'about' ? 'Verder' : 'Klaar'))
 
 const handleDetailNext = () => {
     if (detailPhase.value === 'about') {
@@ -201,6 +219,13 @@ const handleDetailBack = () => {
 const toggleSteps = () => {
     showSteps.value = !showSteps.value
 }
+
+// woordenboek voor uitleg hovers
+const dictionary = privacyDictionary
+
+const summaryText = computed(() => activeContent.value?.summary ?? '')
+const risksText = computed(() => activeContent.value?.risks ?? [])
+const tipsText = computed(() => activeContent.value?.tips ?? [])
 </script>
 
 <template>
@@ -234,10 +259,7 @@ const toggleSteps = () => {
                 class="absolute inset-0 z-30 flex items-end justify-center px-4 py-6"
             >
                 <div class="relative w-full max-w-xl">
-                    <div
-                        :key="step"
-                        class="bg-white shadow-xl px-6 py-8 space-y-4"
-                    >
+                    <div :key="step" class="bg-white shadow-xl px-6 py-8 space-y-4">
                         <h3 class="uppercase text-primary font-semibold">
                             Locky
                         </h3>
@@ -256,6 +278,13 @@ const toggleSteps = () => {
             </div>
         </Transition>
 
+        <DialogHint
+            :visible="phase === 'objects' && hasObjects && showHintDialog && !activeId"
+            :lines="hintLines"
+            padding-class="pb-20"
+            @close="showHintDialog = false"
+        />
+
         <!-- titel -->
         <div
             v-if="hasObjects && phase === 'objects'"
@@ -267,10 +296,7 @@ const toggleSteps = () => {
         </div>
 
         <!-- objecten in een cirkel -->
-        <div
-            v-if="hasObjects && phase === 'objects'"
-            class="relative min-h-screen"
-        >
+        <div v-if="hasObjects && phase === 'objects'" class="relative min-h-screen">
             <TransitionGroup
                 name="object-pop"
                 tag="div"
@@ -285,9 +311,7 @@ const toggleSteps = () => {
                     @click="openObject(id as MuseumObjectId)"
                 >
                     <div
-                        class="flex flex-col items-center gap-1 cursor-pointer
-                   rounded-3xl px-2 py-2
-                   transition-shadow"
+                        class="flex flex-col items-center gap-1 cursor-pointer rounded-3xl px-2 py-2 transition-shadow"
                         :class="[
               !isViewed(id as MuseumObjectId) ? 'object-wiggle' : '',
               'hover:shadow-[0_0_22px_rgba(91,95,255,0.85)]',
@@ -306,185 +330,20 @@ const toggleSteps = () => {
         </div>
 
         <!-- gedetailleerde scherm -->
-        <Transition name="fade">
-            <div
-                v-if="activeId && activeContent"
-                class="absolute inset-0 z-40 flex items-center justify-center px-4 bg-black/35 backdrop-blur-[0.1rem]"
-            >
-                <div
-                    class="max-w-4xl w-full bg-white shadow-xl px-5 pb-6 pt-10 md:px-8 md:py-7"
-                >
-                    <div
-                        class="flex flex-col md:flex-row items-center md:items-start justify-center gap-6 md:gap-8"
-                    >
-                        <div
-                            v-if="lockySvg"
-                            class="flex-shrink-0 flex items-start justify-center"
-                        >
-                            <div class="locky-float-left w-28 h-28 md:w-32 md:h-32">
-                                <div class="locky-svg" v-html="lockySvg" />
-                            </div>
-                        </div>
-
-                        <div class="flex-1 flex flex-col gap-4">
-                            <div
-                                v-if="detailPhase === 'about'"
-                                class="space-y-4 text-left"
-                            >
-                                <h2 class="text-primary font-bold">Locky zegt....</h2>
-                                <div class="space-y-2">
-                                    <h3 class="text-xl font-bold uppercase tracking-[0.16em] text-primary">
-                                        Wat zegt dit {{ objectLabels[activeId] }} over jou?
-                                    </h3>
-                                    <p class="text-text-main leading-relaxed">
-                                        {{ activeContent.summary }}
-                                    </p>
-                                </div>
-
-                                <div class="space-y-2">
-                                    <h3 class="font-bold uppercase tracking-[0.16em] text-text-main">
-                                        Waarom kan dit kwetsbaar zijn?
-                                    </h3>
-                                    <ul class="space-y-2 text-text-main">
-                                        <li
-                                            v-for="risk in activeContent.risks"
-                                            :key="risk"
-                                            class="flex gap-2"
-                                        >
-                                            <span class="mt-[0.2rem] h-2 w-2 rounded-full bg-primary" />
-                                            <span>{{ risk }}</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div
-                                v-else
-                                class="space-y-4 text-left"
-                            >
-                                <h2 class="text-primary font-bold">Locky zegt....</h2>
-                                <div class="space-y-4">
-                                    <h3 class="text-xl font-bold uppercase tracking-[0.18em] text-primary">
-                                        Wat kun je slimmer doen?
-                                    </h3>
-                                    <ul class="space-y-1.5 text-text-main">
-                                        <li
-                                            v-for="tip in activeContent.tips"
-                                            :key="tip"
-                                            class="flex gap-2"
-                                        >
-                                            <span class="mt-[0.2rem] h-2 w-2 rounded-full bg-emerald-500" />
-                                            <span>{{ tip }}</span>
-                                        </li>
-                                    </ul>
-                                </div>
-
-                                <div class="space-y-4">
-                                    <BaseButton
-                                        variant="primary"
-                                        type="button"
-                                        @click="toggleSteps"
-                                    >
-                                        {{ showSteps ? 'Verberg stappenplan' : 'Toon stappenplan' }}
-                                    </BaseButton>
-
-                                    <div
-                                        v-if="showSteps && currentStep"
-                                        class="mt-6 bg-primary-100/40 px-4 py-3 md:px-5 md:py-4 space-y-4"
-                                    >
-                                        <div class="flex items-center justify-between gap-2">
-                                            <div class="font-bold uppercase tracking-[0.16em] text-primary">
-                                                Stappenplan
-                                            </div>
-                                            <div class="text-text-main">
-                                                Stap {{ currentStepIndex + 1 }} van {{ activeSteps.length }}
-                                            </div>
-                                        </div>
-
-                                        <div class="flex flex-col gap-3 md:flex-row md:items-center">
-                                            <!-- MEDIA -->
-                                            <div class="flex items-center justify-center md:w-1/3">
-                                                <img
-                                                    v-if="currentStep.mediaType === 'image'"
-                                                    :src="currentStep.mediaSrc"
-                                                    :alt="currentStep.title"
-                                                    class="max-h-32 max-w-full rounded-xl border border-black/5 bg-white object-contain"
-                                                >
-                                                <div
-                                                    v-else
-                                                    class="flex h-24 w-24 items-center justify-center rounded-full bg-white shadow"
-                                                >
-                                                    <span class="text-2xl">📱</span>
-                                                </div>
-                                            </div>
-
-                                            <!-- TEKST -->
-                                            <div class="md:w-2/3 space-y-2">
-                                                <h4 class="text-sm font-semibold text-text-main">
-                                                    {{ currentStep.title }}
-                                                </h4>
-                                                <p class="text-sm text-text-main/85">
-                                                    {{ currentStep.description }}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <!-- NAV -->
-                                        <div class="flex justify-between pt-1">
-                                            <button
-                                                type="button"
-                                                class="rounded-full px-3 py-1.5 text-xs font-semibold text-text-main/80 bg-white hover:bg-black/5 disabled:opacity-40"
-                                                :disabled="!canPrevStep"
-                                                @click="goPrevStep"
-                                            >
-                                                Vorige stap
-                                            </button>
-
-                                            <button
-                                                type="button"
-                                                class="rounded-full px-3 py-1.5 text-xs font-semibold text-white bg-primary hover:opacity-90 disabled:opacity-40"
-                                                :disabled="!canNextStep"
-                                                @click="goNextStep"
-                                            >
-                                                Volgende stap
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex flex-col items-center justify-center gap-2">
-                            <img
-                                :src="imageMap[activeId as MuseumObjectId]"
-                                :alt="objectLabels[activeId as MuseumObjectId]"
-                                class="h-24 w-24 md:h-28 md:w-28 object-contain"
-                            >
-                            <p class="text-xs md:text-sm font-semibold text-text-main text-center">
-                                {{ objectLabels[activeId as MuseumObjectId] }}
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end gap-2 pt-6">
-                        <BaseButton
-                            variant="secondary"
-                            type="button"
-                            @click="handleDetailBack"
-                        >
-                            Terug
-                        </BaseButton>
-
-                        <BaseButton
-                            type="button"
-                            @click="handleDetailNext"
-                        >
-                            {{ primaryDetailLabel }}
-                        </BaseButton>
-                    </div>
-                </div>
-            </div>
-        </Transition>
+        <ResultDetailModal
+            v-if="activeId && activeContent"
+            :open="!!(activeId && activeContent)"
+            :active-id="activeId"
+            :locky-svg="lockySvg"
+            :object-label="objectLabels[activeId]"
+            :object-image-src="imageMap[activeId]"
+            :summary-text="summaryText"
+            :risks-text="risksText"
+            :tips-text="tipsText"
+            :steps="activeSteps"
+            :dictionary="dictionary"
+            @close="closeObject"
+        />
 
         <!-- fallback -->
         <div
@@ -504,6 +363,21 @@ const toggleSteps = () => {
 .fade-enter-from,
 .fade-leave-to {
     opacity: 0;
+}
+
+/* "fake tooltip" look */
+.tooltip-term {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 4px;
+    font-weight: 600;
+    color: #5b5fff;
+    cursor: help;
+}
+.tooltip-term:focus {
+    outline: 2px solid rgba(91, 95, 255, 0.55);
+    outline-offset: 3px;
+    border-radius: 6px;
 }
 
 /* Locky grootte */
