@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useDialogLines } from '@/composables/useDialogLines'
+import { computed, ref, watch } from 'vue'
 import BaseButton from '~/components/ui/BaseButton.vue'
 
 const props = withDefaults(
@@ -8,10 +7,10 @@ const props = withDefaults(
         lines: string[]
         title?: string
         visible: boolean
-        paddingClass?: string // bv "pb-20" of "pb-6"
-        maxWidthClass?: string // bv "max-w-xl"
-        lastLabel?: string // bv "Oké"
-        nextLabel?: string // bv "Verder"
+        paddingClass?: string
+        maxWidthClass?: string
+        lastLabel?: string
+        nextLabel?: string
     }>(),
     {
         title: 'Locky',
@@ -26,15 +25,37 @@ const emit = defineEmits<{
     (e: 'close'): void
 }>()
 
-const { step, currentLine, isLastLine, next } = useDialogLines(props.lines)
+// ✅ eigen step state (no composable)
+const index = ref(0)
+
+const safeLines = computed(() => props.lines ?? [])
+const step = computed(() => index.value)
+const currentLine = computed(() => safeLines.value[index.value] ?? '')
+const isLastLine = computed(() => index.value >= safeLines.value.length - 1)
 
 const buttonLabel = computed(() =>
     isLastLine.value ? props.lastLabel : props.nextLabel
 )
 
+// reset als dialog opent of lines veranderen
+watch(
+    () => props.visible,
+    (v) => {
+        if (v) index.value = 0
+    }
+)
+
+watch(
+    () => props.lines,
+    () => {
+        index.value = 0
+    },
+    { deep: false }
+)
+
 const handleClick = () => {
     if (!isLastLine.value) {
-        next()
+        index.value += 1
         return
     }
     emit('close')
@@ -50,7 +71,8 @@ const handleClick = () => {
         >
             <div class="relative w-full" :class="maxWidthClass">
                 <div :key="step" class="dialog-pop bg-white shadow-xl px-6 py-8 space-y-4">
-                    <slot name="mascot" />
+                    <!-- ✅ slot-props step -->
+                    <slot name="mascot" :step="step" />
 
                     <h3 class="uppercase text-primary font-semibold">
                         {{ title }}

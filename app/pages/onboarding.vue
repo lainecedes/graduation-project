@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { useDialogLines } from '@/composables/useDialogLines'
 import BaseButton from '~/components/ui/BaseButton.vue'
+import InfoTooltip from '~/components/ui/InfoTooltip.vue'
+import Locky from "~/components/mascotte/Locky.vue";
 
 type AgeGroup = '9-11' | '12-15' | 'adults'
+type LockyMood = 'neutral' | 'happy' | 'sad' | 'surprised'
 
 const router = useRouter()
 const { playerName, playerAgeGroup } = usePlayerProfile()
@@ -32,7 +35,6 @@ const handleIntroNext = () => {
 
 // bounce trigger
 const lockyBounce = ref(false)
-
 const triggerLockyBounce = () => {
     lockyBounce.value = false
     requestAnimationFrame(() => {
@@ -52,7 +54,6 @@ const name = computed({
 const handleNameNext = () => {
     if (!name.value.trim()) return
     triggerLockyBounce()
-    // 🔹 leeftijd altijd resetten voordat we naar age gaan
     playerAgeGroup.value = null as any
     phase.value = 'age'
 }
@@ -79,41 +80,37 @@ const handleAgeNext = () => {
     }, 140)
 }
 
-// locky svg inline
-const lockySvg = ref('')
+/**
+ * Mood mapping
+ * Pas dit aan naar jouw eigen smaak.
+ */
+const moodByStep: Record<number, LockyMood> = {
+    0: 'surprised',
+    1: 'happy',
+    2: 'happy',
+    3: 'neutral',
+    4: 'happy',
+    5: 'neutral',
+    6: 'surprised',
+}
 
-onMounted(async () => {
-    try {
-        const res = await fetch('/mascotte/locky.svg')
-        lockySvg.value = await res.text()
-    } catch {
-        lockySvg.value = ''
-    }
+const lockyMood = computed<LockyMood>(() => {
+    if (phase.value !== 'intro') return 'neutral'
+    return moodByStep[step.value] ?? 'neutral'
 })
 </script>
 
 <template>
     <main class="relative min-h-screen bg-background-alt overflow-hidden">
-        <!-- locky -->
-        <div
-            v-if="lockySvg"
-            class="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2
-             pointer-events-none select-none z-20"
-            aria-hidden="true"
-        >
-            <div class="locky-float">
-                <div :class="['locky-bounce', lockyBounce && 'is-bouncing']">
-                    <div
-                        class="locky-svg
-                   w-56 h-56
-                   sm:w-64 sm:h-64
-                   md:w-72 md:h-72
-                   lg:w-80 lg:h-80"
-                        v-html="lockySvg"
-                    />
-                </div>
-            </div>
-        </div>
+        <div aria-hidden="true" class="bg-stripes-overlay" />
+
+        <!-- Locky (via component) -->
+        <Locky
+            class="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2 z-20"
+            :mood="lockyMood"
+            size="xl"
+            :bounce="lockyBounce"
+        />
 
         <!-- intro onboarding -->
         <Transition name="dialog-fade">
@@ -144,30 +141,32 @@ onMounted(async () => {
             class="relative z-10 min-h-screen flex flex-col items-center justify-center px-4"
         >
             <h2 class="mb-[17rem] text-2xl md:text-3xl font-bold text-text-main text-center">
-                Wat is je naam?
+                Hoe wil je genoemd worden?
             </h2>
 
-            <div class="w-full max-w-md space-y-4">
-                <div class="space-y-2">
-                    <label class="block text-xl font-medium text-slate-800">
-                        Jouw naam
-                    </label>
-
-                    <input
-                        v-model="name"
-                        type="text"
-                        class="w-full border border-primary px-4 py-2.5
-                   outline-none focus:border-primary-focus focus:ring-1
-                   focus:ring-primary-focus bg-slate-50"
-                        placeholder="Typ hier je naam"
+            <div class="w-full max-w-md space-y-4 mt-[4rem]">
+                <div class="flex flex-col gap-4">
+                    <InfoTooltip
+                        label="Huh, waarom moet ik mijn naam typen?"
+                        content="Zodat Locky weet hoe hij jou kan noemen. We onthouden je naam niet en delen ’m nergens. Liever niet? Dan mag je ook een verzonnen naam invullen!"
+                        placement="bottom"
+                        variant="white"
                     />
+
+                    <label>
+                        <input
+                            v-model="name"
+                            type="text"
+                            class="w-full border border-primary px-4 py-2.5
+                     outline-none focus:border-primary-focus focus:ring-1
+                     focus:ring-primary-focus bg-slate-50"
+                            placeholder="Klik hier om te typen!"
+                        />
+                    </label>
                 </div>
 
                 <div class="flex justify-end pt-2">
-                    <BaseButton
-                        :disabled="!name.trim()"
-                        @click="handleNameNext"
-                    >
+                    <BaseButton :disabled="!name.trim()" @click="handleNameNext">
                         Verder
                     </BaseButton>
                 </div>
@@ -183,10 +182,13 @@ onMounted(async () => {
                 Hoe oud ben je?
             </h2>
 
-            <div class="w-full max-w-xl space-y-4">
-                <p class="mt-[2rem] text-text-main text-xl text-center">
-                    Dan kan ik het museum en de uitleg beter laten passen bij jou.
-                </p>
+            <div class="w-full max-w-xl space-y-6 mt-[4rem]">
+                <InfoTooltip
+                    label="En nu ook mijn leeftijd?"
+                    content="Zo kan Locky de uitleg precies aanpassen aan hoe oud jij bent. Het helpt alleen om het museum duidelijk en leuk te houden voor jou!"
+                    placement="bottom"
+                    variant="white"
+                />
 
                 <div class="grid gap-3 md:grid-cols-3">
                     <BaseButton
@@ -220,15 +222,14 @@ onMounted(async () => {
                     </BaseButton>
                 </div>
 
-                <BaseButton
-                    type="button"
-                    :disabled="!selectedAgeGroup"
-                    @click="handleAgeNext"
-                >
+                <BaseButton type="button" :disabled="!selectedAgeGroup" @click="handleAgeNext">
                     Verder
                 </BaseButton>
             </div>
         </div>
+
+        <!-- animated pattern background -->
+        <div aria-hidden="true" class="bg-stripes" />
     </main>
 </template>
 
@@ -269,47 +270,37 @@ onMounted(async () => {
     transform-origin: bottom center;
 }
 
-.locky-float {
-    transform-origin: 50% 100%;
-    animation: locky-float 2.2s ease-in-out infinite;
-    filter: drop-shadow(0 10px 16px rgba(0,0,0,0.18));
+.bg-stripes-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.18;
+
+    background-image: linear-gradient(
+        -45deg,
+        rgba(91, 95, 255, 0.35) 25%,
+        rgba(91, 95, 255, 0) 25%,
+        rgba(91, 95, 255, 0) 50%,
+        rgba(91, 95, 255, 0.35) 50%,
+        rgba(91, 95, 255, 0.35) 75%,
+        rgba(91, 95, 255, 0) 75%,
+        rgba(91, 95, 255, 0) 100%
+    );
+
+    background-size: 300px 300px;
+    background-position: 0 0;
+    animation: stripes-move 10s linear infinite;
+
+    transform: translateZ(0);
+    will-change: background-position;
 }
 
-@keyframes locky-float {
-    0%, 100% { transform: translateY(0) rotate(-2deg); }
-    50% { transform: translateY(-10px) rotate(2deg); }
+@keyframes stripes-move {
+    to { background-position: 300px 0; }
 }
 
-.locky-bounce.is-bouncing {
-    animation: locky-bounce 0.48s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-@keyframes locky-bounce {
-    0%   { transform: translateY(0) rotate(0deg) scale(1); }
-    35%  { transform: translateY(-18px) rotate(-2deg) scale(1.03); }
-    65%  { transform: translateY(0) rotate(2deg) scale(0.99); }
-    100% { transform: translateY(0) rotate(0deg) scale(1); }
-}
-
-.locky-svg :deep(.eye) {
-    animation: look 4s ease-in-out infinite;
-    transform-origin: center;
-}
-
-@keyframes look {
-    0%, 100% { transform: translate(0, 0); }
-    25% { transform: translate(3px, 1px); }
-    50% { transform: translate(-3px, 1px); }
-    75% { transform: translate(0, -2px); }
-}
-
-.locky-svg :deep(.lock-arc) {
-    animation: arc-bounce 2.5s ease-in-out infinite;
-    transform-origin: center bottom;
-}
-
-@keyframes arc-bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
+@media (prefers-reduced-motion: reduce) {
+    .bg-stripes-overlay { animation: none; }
 }
 </style>

@@ -1,11 +1,14 @@
+<!-- components/museum/MuseumIntroOverlay.vue -->
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onBeforeUnmount } from 'vue'
 import { useDialogLines } from '@/composables/useDialogLines'
 import { usePlayerProfile } from '@/composables/usePlayerProfile'
 import BaseButton from '~/components/ui/BaseButton.vue'
-import DialogHint from "~/components/ui/DialogHint.vue";
+import DialogHint from '~/components/ui/DialogHint.vue'
+import Locky from '~/components/mascotte/Locky.vue'
 
 type AgeGroup = '9-11' | '12-15' | 'adults'
+type LockyMood = 'neutral' | 'happy' | 'sad' | 'surprised'
 
 const { playerAgeGroup } = usePlayerProfile()
 
@@ -56,16 +59,8 @@ const hintLinesByAge: Record<AgeGroup, string[]> = {
     ],
 }
 
-const introLines = introLinesByAge[ageGroup.value]
-const hintLines = hintLinesByAge[ageGroup.value]
-
-const props = defineProps<{
-    playerName: string
-}>()
-
-const emit = defineEmits<{
-    (e: 'opened'): void
-}>()
+const props = defineProps<{ playerName: string }>()
+const emit = defineEmits<{ (e: 'opened'): void }>()
 
 const phase = ref<'intro' | 'hint'>('intro')
 
@@ -73,52 +68,78 @@ const isCountingDown = ref(false)
 const countdown = ref(3)
 let countdownTimer: number | null = null
 
-// gordijn state
 const showCurtain = ref(true)
 const isCurtainOpening = ref(false)
 
-// intro dialog
+const introLines = computed(() => introLinesByAge[ageGroup.value])
+const hintLines = computed(() => hintLinesByAge[ageGroup.value])
+
+// ✅ useDialogLines + reset bij ageGroup wijziging
 const {
     step: introStep,
     currentLine: introCurrentLine,
     isLastLine: introIsLastLine,
     next: introNext,
-} = useDialogLines(introLines)
+    reset: introReset,
+} = useDialogLines(introLines.value)
 
-// hint dialog
-const {
-    step: hintStep,
-    currentLine: hintCurrentLine,
-    isLastLine: hintIsLastLine,
-    next: hintNext,
-} = useDialogLines(hintLines)
+// moods
+const introLockyMoodByStep: Record<number, LockyMood> = {
+    0: 'happy',
+    1: 'neutral',
+    2: 'sad',
+    3: 'surprised',
+}
+
+const hintLockyMoodByStep: Record<number, LockyMood> = {
+    0: 'happy',
+    1: 'surprised',
+    2: 'neutral',
+    3: 'neutral',
+}
+
+const introLockyMood = computed<LockyMood>(() => {
+    return introLockyMoodByStep[introStep.value] ?? 'neutral'
+})
 
 const introPrimaryLabel = computed(() =>
-    introIsLastLine.value ? 'Ja, open mijn museum!' : 'Verder',
+    introIsLastLine.value ? 'Ja, open mijn museum!' : 'Verder'
 )
 
-const hintPrimaryLabel = computed(() =>
-    hintIsLastLine.value ? 'Oké, ik ga kijken' : 'Verder',
-)
-
-const handleHintDone = () => {
-    emit('opened')
+const clearCountdown = () => {
+    if (countdownTimer !== null) {
+        clearInterval(countdownTimer)
+        countdownTimer = null
+    }
 }
+
+onBeforeUnmount(() => clearCountdown())
+
+watch(ageGroup, () => {
+    // reset dialog state als leeftijd wisselt
+    introReset()
+    phase.value = 'intro'
+    isCountingDown.value = false
+    countdown.value = 3
+    showCurtain.value = true
+    isCurtainOpening.value = false
+    clearCountdown()
+})
+
+const handleHintDone = () => emit('opened')
 
 const startCountdown = () => {
     if (isCountingDown.value) return
 
     isCountingDown.value = true
     countdown.value = 3
+    clearCountdown()
 
     countdownTimer = window.setInterval(() => {
         countdown.value -= 1
 
         if (countdown.value <= 0) {
-            if (countdownTimer !== null) {
-                clearInterval(countdownTimer)
-                countdownTimer = null
-            }
+            clearCountdown()
 
             isCountingDown.value = false
             isCurtainOpening.value = true
@@ -139,26 +160,6 @@ const handleIntroClick = () => {
     }
     startCountdown()
 }
-
-const handleHintClick = () => {
-    if (!hintIsLastLine.value) {
-        hintNext()
-        return
-    }
-    emit('opened')
-}
-
-// SVG Locky
-const lockySvg = ref('')
-
-onMounted(async () => {
-    try {
-        const res = await fetch('/mascotte/locky.svg')
-        lockySvg.value = await res.text()
-    } catch {
-        lockySvg.value = ''
-    }
-})
 </script>
 
 <template>
@@ -187,11 +188,10 @@ onMounted(async () => {
                 class="dialog-pop relative z-10 w-full max-w-xl bg-white shadow-xl px-6 py-8 space-y-4"
             >
                 <div
-                    v-if="lockySvg"
-                    class="locky absolute bottom-[80%] -left-6 w-40 h-40 pointer-events-none select-none"
+                    class="locky absolute bottom-[80%] -left-2 w-40 h-40 pointer-events-none select-none"
                     aria-hidden="true"
                 >
-                    <div class="locky-svg" v-html="lockySvg" />
+                    <Locky :mood="introLockyMood" size="lg" class="w-full h-full" />
                 </div>
 
                 <h3 class="uppercase text-primary font-semibold">Locky</h3>
@@ -207,19 +207,19 @@ onMounted(async () => {
                 </div>
             </div>
 
+            <!-- hint dialoog -->
             <DialogHint
                 :visible="phase === 'hint' && !isCountingDown && !isCurtainOpening"
                 :lines="hintLines"
                 padding-class="pb-6"
                 @close="handleHintDone"
             >
-                <template #mascot>
+                <template #mascot="{ step }">
                     <div
-                        v-if="lockySvg"
-                        class="locky absolute bottom-[80%] -left-6 w-40 h-40 pointer-events-none select-none"
+                        class="locky absolute bottom-[80%] -left-2 w-40 h-40 pointer-events-none select-none"
                         aria-hidden="true"
                     >
-                        <div class="locky-svg" v-html="lockySvg" />
+                        <Locky :mood="hintLockyMoodByStep[step] ?? 'neutral'" size="lg" class="w-full h-full" />
                     </div>
                 </template>
             </DialogHint>
@@ -230,9 +230,7 @@ onMounted(async () => {
                     v-if="isCountingDown && countdown > 0"
                     class="fixed inset-0 z-[999] flex items-center justify-center bg-black/40 backdrop-blur-sm"
                 >
-                    <div
-                        class="text-[120px] font-extrabold text-white drop-shadow-lg animate-countdown-scale"
-                    >
+                    <div class="text-[120px] font-extrabold text-white drop-shadow-lg animate-countdown-scale">
                         {{ countdown }}
                     </div>
                 </div>
@@ -242,48 +240,38 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-/* ===== dialog fade ===== */
 .dialog-fade-enter-active,
 .dialog-fade-leave-active {
     transition: opacity 0.22s ease-out, transform 0.22s ease-out;
 }
-
 .dialog-fade-enter-from,
 .dialog-fade-leave-to {
     opacity: 0;
     transform: translateY(12px) scale(0.96);
 }
-
 .dialog-fade-enter-to,
 .dialog-fade-leave-from {
     opacity: 1;
     transform: translateY(0) scale(1);
 }
 
-/* pop per line */
 @keyframes dialog-pop {
     0% { transform: translateY(6px) scale(0.96); opacity: 0; }
     60% { transform: translateY(0) scale(1.02); opacity: 1; }
     100% { transform: translateY(0) scale(1); opacity: 1; }
 }
-
 .dialog-pop {
     animation: dialog-pop 0.24s ease-out;
     transform-origin: bottom center;
 }
 
-/* countdown animatie */
 @keyframes countdown-scale {
     0% { transform: scale(0.7); opacity: 0; }
     50% { transform: scale(1.1); opacity: 1; }
     100% { transform: scale(1); opacity: 1; }
 }
+.animate-countdown-scale { animation: countdown-scale 0.4s ease-out; }
 
-.animate-countdown-scale {
-    animation: countdown-scale 0.4s ease-out;
-}
-
-/* gordijn */
 .curtain-wrap {
     position: absolute;
     inset: 0;
@@ -291,84 +279,40 @@ onMounted(async () => {
     display: flex;
     justify-content: space-between;
 }
-
 .curtain-panel {
     position: relative;
     width: 50%;
     height: 100%;
-    /* kies hier je gordijnkleur / gradient */
-    background: radial-gradient(circle at top, #f9f5ff 0, #5b5fff 55%, #2b2b88 100%);
-    box-shadow: 0 0 40px rgba(0, 0, 0, 0.35);
+    background:
+        linear-gradient(
+            to right,
+            rgba(0,0,0,0.20) 0%,
+            rgba(0,0,0,0) 10%
+        ),
+        repeating-linear-gradient(
+            to right,
+            #6b6eff 0px,
+            #5b5fff 24px,
+            #4f53e6 48px,
+            #5b5fff 72px
+        );
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.2);
 }
 
-/* linkergordijn */
-.curtain-left {
-    transform: translateX(0%);
-}
-
-/* rechtergordijn */
-.curtain-right {
-    transform: translateX(0%);
-}
-
-/* open-animaties */
-.curtain-open-left {
-    animation: curtain-open-left 0.9s ease-in-out forwards;
-}
-
-.curtain-open-right {
-    animation: curtain-open-right 0.9s ease-in-out forwards;
-}
-
-@keyframes curtain-open-left {
-    0% {
-        transform: translateX(0%);
-    }
-    100% {
-        transform: translateX(-100%);
-    }
-}
-
-@keyframes curtain-open-right {
-    0% {
-        transform: translateX(0%);
-    }
-    100% {
-        transform: translateX(100%);
-    }
-}
+.curtain-left { transform: translateX(0%); }
+.curtain-right { transform: translateX(0%); }
+.curtain-open-left { animation: curtain-open-left 0.9s ease-in-out forwards; }
+.curtain-open-right { animation: curtain-open-right 0.9s ease-in-out forwards; }
+@keyframes curtain-open-left { 0% { transform: translateX(0%); } 100% { transform: translateX(-100%); } }
+@keyframes curtain-open-right { 0% { transform: translateX(0%); } 100% { transform: translateX(100%); } }
 
 .locky {
     transform-origin: 50% 100%;
     animation: locky-float 2.2s ease-in-out infinite;
     filter: drop-shadow(0 10px 16px rgba(0,0,0,0.18));
 }
-
 @keyframes locky-float {
     0%, 100% { transform: translateY(0) rotate(-2deg); }
     50% { transform: translateY(-10px) rotate(2deg); }
-}
-
-/* internal SVG */
-.locky :deep(.eye) {
-    animation: look 4s ease-in-out infinite;
-    transform-origin: center;
-}
-
-@keyframes look {
-    0%, 100% { transform: translate(0, 0); }
-    25% { transform: translate(3px, 1px); }
-    50% { transform: translate(-3px, 1px); }
-    75% { transform: translate(0, -2px); }
-}
-
-.locky :deep(.lock-arc) {
-    animation: arc-bounce 2.5s ease-in-out infinite;
-    transform-origin: center bottom;
-}
-
-@keyframes arc-bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
 }
 </style>

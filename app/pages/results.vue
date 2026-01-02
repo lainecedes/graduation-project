@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useMuseumSelection } from '@/composables/useMuseumSelection'
 import { useDialogLines } from '@/composables/useDialogLines'
 import { usePlayerProfile } from '@/composables/usePlayerProfile'
@@ -10,6 +10,7 @@ import BaseButton from '~/components/ui/BaseButton.vue'
 import TooltipDictionary from '~/components/ui/TooltipDictionary.vue'
 import DialogHint from '~/components/ui/DialogHint.vue'
 import ResultDetailModal from '~/components/museum/ResultDetailModal.vue'
+import Locky from '~/components/mascotte/Locky.vue'
 
 // JSON data
 import rawObjectInfo from '@/data/objectInfo.json'
@@ -20,13 +21,19 @@ import type { AgeGroup, ObjectInfo, ObjectStep } from '~/components/museum/types
 import { imageMap, hintLinesByAge } from '~/components/museum/types/resultConstants'
 import { privacyDictionary } from '~/components/museum/types/privacyDictionary'
 
+type LockyMood = 'neutral' | 'happy' | 'sad' | 'surprised'
+
+const mounted = ref(false)
+onMounted(() => { mounted.value = true })
+
+
 const objectInfo = rawObjectInfo as Record<MuseumObjectId, ObjectInfo>
 const objectSteps = rawObjectSteps as Record<MuseumObjectId, ObjectStep[]>
 
 const { selectedObjects } = useMuseumSelection()
 const { playerAgeGroup, playerName } = usePlayerProfile()
 
-const hasObjects = computed(() => selectedObjects.value.length > 0)
+const hasObjects = computed(() => mounted.value && selectedObjects.value.length > 0)
 
 type Phase = 'intro' | 'objects'
 const phase = ref<Phase>('intro')
@@ -42,7 +49,12 @@ const ageGroup = computed<AgeGroup>(() => {
 })
 
 // Locky intro (na heist)
-const { step, currentLine, isLastLine, next } = useDialogLines([
+const {
+    step,
+    currentLine,
+    isLastLine,
+    next,
+} = useDialogLines([
     'Wow… dat was best wel eng.',
     'De dief is langs geweest, maar ik heb je spullen weer teruggevonden.',
     'Zullen we kijken wat er uit jouw collectie is meegenomen?',
@@ -51,12 +63,20 @@ const { step, currentLine, isLastLine, next } = useDialogLines([
 // hint dialoog (leeftijd afhankelijk)
 const hintLines = computed(() => hintLinesByAge[ageGroup.value])
 
-const {
-    step: hintStep,
-    currentLine: hintCurrentLine,
-    isLastLine: hintIsLastLine,
-    next: hintNext,
-} = useDialogLines(hintLines.value)
+// hint state (zonder useDialogLines)
+const hintIndex = ref(0)
+
+watch(hintLines, () => {
+    hintIndex.value = 0
+})
+
+const hintStep = computed(() => hintIndex.value)
+const hintCurrentLine = computed(() => hintLines.value[hintIndex.value] ?? '')
+const hintIsLastLine = computed(() => hintIndex.value >= hintLines.value.length - 1)
+
+const hintNext = () => {
+    if (!hintIsLastLine.value) hintIndex.value += 1
+}
 
 // hint flow
 const handleHintClick = () => {
@@ -86,11 +106,9 @@ const handleNext = () => {
         return
     }
 
-    // eerst objecten tonen
     phase.value = 'objects'
     triggerLockyBounce()
 
-    // hint pas openen als locky in midden staat
     if (hintOpenTimer) {
         clearTimeout(hintOpenTimer)
         hintOpenTimer = null
@@ -99,24 +117,12 @@ const handleNext = () => {
     showHintDialog.value = false
 
     hintOpenTimer = window.setTimeout(() => {
-        // alleen tonen als er geen detail open is
         if (!activeId.value) {
             showHintDialog.value = true
             triggerLockyBounce()
         }
     }, 900)
 }
-
-// locky svg
-const lockySvg = ref('')
-onMounted(async () => {
-    try {
-        const res = await fetch('/mascotte/locky.svg')
-        lockySvg.value = await res.text()
-    } catch {
-        lockySvg.value = ''
-    }
-})
 
 // vaste slots voor cirkel
 const ringSlots = [
@@ -164,20 +170,6 @@ const activeSteps = computed<ObjectStep[]>(() => {
     return objectSteps[activeId.value] ?? []
 })
 
-const currentStep = computed<ObjectStep | null>(() => {
-    return activeSteps.value[currentStepIndex.value] ?? null
-})
-
-const canPrevStep = computed(() => currentStepIndex.value > 0)
-const canNextStep = computed(() => currentStepIndex.value < activeSteps.value.length - 1)
-
-const goPrevStep = () => {
-    if (canPrevStep.value) currentStepIndex.value -= 1
-}
-const goNextStep = () => {
-    if (canNextStep.value) currentStepIndex.value += 1
-}
-
 const openObject = (id: MuseumObjectId) => {
     activeId.value = id
     detailPhase.value = 'about'
@@ -196,59 +188,53 @@ const closeObject = () => {
     showSteps.value = false
 }
 
-// detail knoppen
-const primaryDetailLabel = computed(() => (detailPhase.value === 'about' ? 'Verder' : 'Klaar'))
-
-const handleDetailNext = () => {
-    if (detailPhase.value === 'about') {
-        detailPhase.value = 'tips'
-        return
-    }
-    closeObject()
-}
-
-const handleDetailBack = () => {
-    if (detailPhase.value === 'tips') {
-        detailPhase.value = 'about'
-        showSteps.value = false
-        return
-    }
-    closeObject()
-}
-
-const toggleSteps = () => {
-    showSteps.value = !showSteps.value
-}
-
 // woordenboek voor uitleg hovers
 const dictionary = privacyDictionary
 
 const summaryText = computed(() => activeContent.value?.summary ?? '')
 const risksText = computed(() => activeContent.value?.risks ?? [])
 const tipsText = computed(() => activeContent.value?.tips ?? [])
+
+// ===== Locky moods =====
+const introLockyMoodByStep: Record<number, LockyMood> = {
+    0: 'surprised',
+    1: 'neutral',
+    2: 'happy',
+}
+
+const hintLockyMoodByStep: Record<number, LockyMood> = {
+    0: 'happy',
+    1: 'surprised',
+    2: 'neutral',
+    3: 'neutral',
+}
+
+const introLockyMood = computed<LockyMood>(() => {
+    return introLockyMoodByStep[step.value] ?? 'neutral'
+})
+
+const hintLockyMood = computed<LockyMood>(() => {
+    return hintLockyMoodByStep[hintStep.value] ?? 'neutral'
+})
 </script>
 
 <template>
     <main class="relative min-h-screen bg-primary overflow-hidden px-4 py-4">
-        <!-- locky intro -->
+        <!-- locky centraal -->
         <div
-            v-if="lockySvg && hasObjects && !activeId"
+            v-if="hasObjects && !activeId"
             :class="[
         'absolute left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none z-20',
         phase === 'intro' ? 'top-[35%]' : 'top-[45%]',
       ]"
             aria-hidden="true"
         >
-            <div class="locky-float">
-                <div
-                    :class="[
-            'locky-bounce',
-            lockyBounce && 'is-bouncing',
-            phase === 'objects' ? 'locky-small' : 'locky-large',
-          ]"
-                >
-                    <div class="locky-svg" v-html="lockySvg" />
-                </div>
+            <div :class="['locky-bounce', lockyBounce && 'is-bouncing']">
+                <Locky
+                    :mood="phase === 'intro' ? introLockyMood : hintLockyMood"
+                    :size="phase === 'intro' ? 'xl' : 'lg'"
+                    class="locky-center"
+                />
             </div>
         </div>
 
@@ -278,12 +264,17 @@ const tipsText = computed(() => activeContent.value?.tips ?? [])
             </div>
         </Transition>
 
+        <!-- hint dialog (met Locky slot) -->
         <DialogHint
             :visible="phase === 'objects' && hasObjects && showHintDialog && !activeId"
             :lines="hintLines"
+            :step="hintIndex"
             padding-class="pb-20"
-            @close="showHintDialog = false"
-        />
+            @next="hintNext"
+            @close="handleHintClick"
+        >
+            <template #mascot></template>
+        </DialogHint>
 
         <!-- titel -->
         <div
@@ -334,7 +325,6 @@ const tipsText = computed(() => activeContent.value?.tips ?? [])
             v-if="activeId && activeContent"
             :open="!!(activeId && activeContent)"
             :active-id="activeId"
-            :locky-svg="lockySvg"
             :object-label="objectLabels[activeId]"
             :object-image-src="imageMap[activeId]"
             :summary-text="summaryText"
@@ -374,18 +364,9 @@ const tipsText = computed(() => activeContent.value?.tips ?? [])
 }
 
 @keyframes dialog-pop {
-    0% {
-        transform: translateY(6px) scale(0.96);
-        opacity: 0;
-    }
-    60% {
-        transform: translateY(0) scale(1.02);
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(0) scale(1);
-        opacity: 1;
-    }
+    0% { transform: translateY(6px) scale(0.96); opacity: 0; }
+    60% { transform: translateY(0) scale(1.02); opacity: 1; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
 }
 
 .dialog-pop {
@@ -408,47 +389,13 @@ const tipsText = computed(() => activeContent.value?.tips ?? [])
     border-radius: 6px;
 }
 
-/* Locky grootte */
-.locky-svg {
-    transition: width 0.35s ease-out, height 0.35s ease-out, transform 0.35s ease-out;
+/* Locky center sizing is handled by Locky component size prop.
+   Deze wrapper is alleen voor bounce trigger. */
+.locky-center {
+    display: block;
 }
 
-.locky-large .locky-svg {
-    width: 18rem;
-    height: 18rem;
-}
-
-.locky-small .locky-svg {
-    width: 10rem;
-    height: 10rem;
-    transform: translateY(4px) scale(0.95);
-}
-
-/* centrale float */
-.locky-float {
-    transform-origin: 50% 100%;
-    animation: locky-float 2.2s ease-in-out infinite;
-    filter: drop-shadow(0 10px 16px rgba(0,0,0,0.18));
-}
-
-@keyframes locky-float {
-    0%, 100% { transform: translateY(0) rotate(-2deg); }
-    50% { transform: translateY(-10px) rotate(2deg); }
-}
-
-/* kleine float links in detail-view */
-.locky-float-left {
-    transform-origin: 50% 100%;
-    animation: locky-float-left 2.2s ease-in-out infinite;
-    filter: drop-shadow(0 8px 14px rgba(0,0,0,0.16));
-}
-
-@keyframes locky-float-left {
-    0%, 100% { transform: translateY(0) rotate(-1deg); }
-    50% { transform: translateY(-6px) rotate(1deg); }
-}
-
-/* bounce */
+/* bounce wrapper */
 .locky-bounce.is-bouncing {
     animation: locky-bounce 0.48s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -458,29 +405,6 @@ const tipsText = computed(() => activeContent.value?.tips ?? [])
     35%  { transform: translateY(-18px) rotate(-2deg) scale(1.03); }
     65%  { transform: translateY(0) rotate(2deg) scale(0.99); }
     100% { transform: translateY(0) rotate(0deg) scale(1); }
-}
-
-/* svg intern */
-.locky-svg :deep(.eye) {
-    animation: look 4s ease-in-out infinite;
-    transform-origin: center;
-}
-
-@keyframes look {
-    0%, 100% { transform: translate(0, 0); }
-    25% { transform: translate(3px, 1px); }
-    50% { transform: translate(-3px, 1px); }
-    75% { transform: translate(0, -2px); }
-}
-
-.locky-svg :deep(.lock-arc) {
-    animation: arc-bounce 2.5s ease-in-out infinite;
-    transform-origin: center bottom;
-}
-
-@keyframes arc-bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
 }
 
 /* ring layout */
@@ -509,7 +433,7 @@ const tipsText = computed(() => activeContent.value?.tips ?? [])
     transform: scale(1) translateY(0);
 }
 
-/* wiggle animatie voor klikbare objecten (inner wrapper) */
+/* wiggle animatie voor klikbare objecten */
 @keyframes object-wiggle {
     0%   { transform: translateY(0) rotate(0deg); }
     25%  { transform: translateY(-3px) rotate(-2deg); }
@@ -519,7 +443,7 @@ const tipsText = computed(() => activeContent.value?.tips ?? [])
 }
 
 .object-wiggle {
-    animation: object-wiggle 1.4s ease-in-out infinite;
+    animation: object-wiggle 0.5s ease-in-out infinite;
     transform-origin: center bottom;
 }
 </style>

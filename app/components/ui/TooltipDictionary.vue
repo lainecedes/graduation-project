@@ -1,4 +1,6 @@
-<<script setup lang="ts">
+<script setup lang="ts">
+import { computed } from 'vue'
+
 export type DictionaryItem = {
     label: string
     description: string
@@ -16,7 +18,8 @@ const props = defineProps<{
     class?: string
 }>()
 
-const tag = props.as ?? 'span'
+const tag = computed(() => props.as ?? 'span')
+const hasText = computed(() => props.text !== undefined)
 
 const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
@@ -49,7 +52,7 @@ const linesTokens = computed(() => (props.lines ?? []).map((l) => tokenize(l)))
 
 <template>
     <!-- single text -->
-    <component v-if="text !== undefined" :is="tag" :class="props.class">
+    <component v-if="hasText" :is="tag" :class="props.class">
         <template v-for="(token, i) in textTokens" :key="i">
             <span v-if="token.type === 'text'">{{ token.value }}</span>
 
@@ -63,7 +66,7 @@ const linesTokens = computed(() => (props.lines ?? []).map((l) => tokenize(l)))
         </template>
     </component>
 
-    <!-- list of lines -->
+    <!-- lines -->
     <div v-else :class="props.class">
         <div v-for="(tokens, idx) in linesTokens" :key="idx">
             <template v-for="(token, i) in tokens" :key="i">
@@ -106,7 +109,7 @@ const linesTokens = computed(() => (props.lines ?? []).map((l) => tokenize(l)))
     color: #111;
     padding: 10px 12px;
     border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
 
     font-size: 0.85rem;
     line-height: 1.35;

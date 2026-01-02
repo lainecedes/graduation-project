@@ -138,7 +138,7 @@ const handleNext = () => {
 }
 
 .photographer-wiggle {
-    animation: photographer-wiggle 2s ease-in-out infinite;
+    animation: photographer-wiggle 1s ease-in-out infinite;
     transform-origin: bottom center;
 }
 
@@ -155,6 +155,6 @@ const handleNext = () => {
 }
 
 .animate-visitor-walk {
-    animation: visitor-walk 0.7s ease-out forwards;
+    animation: visitor-walk 1s ease-in-out forwards;
 }
 </style>

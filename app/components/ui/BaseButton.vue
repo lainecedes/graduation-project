@@ -21,10 +21,12 @@ const props = withDefaults(
 
 const baseClasses =
     'inline-flex items-center justify-center rounded-xl font-medium ' +
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2'
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ' +
+    'transition-[transform,background-color,border-color,color,box-shadow] duration-200 ease-out'
 
 const disabledClasses =
-    'bg-[#C7C7C7] text-[#555] border-none cursor-not-allowed translate-y-0 !shadow-none'
+    'bg-[#C7C7C7] text-[#555] border-none cursor-not-allowed translate-y-0 !shadow-none ' +
+    'hover:bg-[#C7C7C7] active:bg-[#C7C7C7]'
 
 const variantClasses: Record<string, string> = {
     primary: `
@@ -73,11 +75,12 @@ const sizeClasses: Record<string, string> = {
     >
         <!-- shadow weg bij disabled -->
         <div
-            v-if="variant !== 'link' && !disabled"
+            v-if="variant !== 'link'"
             :class="[
-        'absolute inset-x-0 top-1 h-full rounded-xl',
-        shadowClasses[variant],
-      ]"
+            'absolute inset-x-0 top-1 h-full rounded-xl transition-opacity duration-200 ease-out',
+            shadowClasses[variant],
+            disabled ? 'opacity-0' : 'opacity-100',
+          ]"
         />
 
         <button

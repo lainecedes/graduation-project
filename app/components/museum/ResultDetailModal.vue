@@ -3,8 +3,10 @@ import { computed, ref, watch } from 'vue'
 import type { MuseumObjectId } from '~/components/museum/types/museumObjects'
 import BaseButton from '~/components/ui/BaseButton.vue'
 import TooltipDictionary from '~/components/ui/TooltipDictionary.vue'
+import Locky from "~/components/mascotte/Locky.vue";
 
 type StepMediaType = 'image' | 'video' | 'icon'
+type LockyMood = 'neutral' | 'happy' | 'sad' | 'surprised'
 
 export type ObjectStep = {
     title: string
@@ -21,6 +23,7 @@ const props = defineProps<{
     lockySvg?: string
     objectLabel: string
     objectImageSrc: string
+    lockyMood?: LockyMood
 
     summaryText: string
     risksText: string[]
@@ -92,9 +95,12 @@ const toggleSteps = () => {
         >
             <div class="max-w-4xl w-full bg-white shadow-xl px-5 pb-6 pt-10 md:px-8 md:py-7">
                 <div class="flex flex-col md:flex-row items-center md:items-start justify-center gap-6 md:gap-8">
-                    <div v-if="lockySvg" class="flex-shrink-0 flex items-start justify-center">
-                        <div class="locky-float-left w-28 h-28 md:w-32 md:h-32">
-                            <div class="locky-svg" v-html="lockySvg" />
+                    <div class="flex-shrink-0 flex items-start justify-center">
+                        <div class="locky-float-left">
+                            <Locky
+                                :mood="props.lockyMood ?? 'neutral'"
+                                size="md"
+                            />
                         </div>
                     </div>
 
