@@ -19,6 +19,8 @@ const props = withDefaults(
     }
 )
 
+const tooltipId = `tooltip-${Math.random().toString(36).slice(2)}`
+
 const sideClass = computed(() =>
     props.placement === 'top'
         ? 'bottom-full mb-2'
@@ -27,29 +29,20 @@ const sideClass = computed(() =>
 
 const floatClass = computed(() =>
     props.placement === 'top'
-        ? 'translate-y-1 group-hover:translate-y-0'
-        : '-translate-y-1 group-hover:translate-y-0'
+        ? 'translate-y-1 group-hover:translate-y-0 group-focus-within:translate-y-0'
+        : '-translate-y-1 group-hover:translate-y-0 group-focus-within:translate-y-0'
 )
 
 const bubbleClass = computed(() => {
-    if (props.variant === 'primary') {
-        return `
-            bg-primary text-white
-        `
-    }
-
-    return `
-        bg-white text-text-main
-        shadow-xl border border-primary/50
-    `
+    return props.variant === 'primary'
+        ? 'bg-primary text-white'
+        : 'bg-white text-text-main shadow-xl border border-primary/50'
 })
 
 const labelClass = computed(() => {
-    if (props.variant === 'primary') {
-        return 'font-bold text-white'
-    }
-
-    return 'font-semibold text-primary'
+    return props.variant === 'primary'
+        ? 'font-bold text-white'
+        : 'font-semibold text-primary'
 })
 </script>
 
@@ -59,7 +52,11 @@ const labelClass = computed(() => {
         <button
             type="button"
             class="inline-flex items-center gap-2 text-sm font-semibold
-                   text-text-main hover:underline focus:outline-none"
+                   text-text-main hover:underline
+                   focus-visible:outline focus-visible:outline-2
+                   focus-visible:outline-primary focus-visible:outline-offset-2"
+            aria-haspopup="true"
+            :aria-describedby="tooltipId"
         >
             <span
                 class="inline-flex h-6 w-6 items-center justify-center
@@ -79,14 +76,15 @@ const labelClass = computed(() => {
             :class="sideClass"
         >
             <span
+                :id="tooltipId"
+                role="tooltip"
                 class="block rounded-xl px-4 py-3 text-sm leading-relaxed
                        opacity-0 transition-all duration-150 ease-out
-                       group-hover:opacity-100"
+                       group-hover:opacity-100
+                       group-focus-within:opacity-100"
                 :class="[bubbleClass, widthClass, floatClass]"
             >
-                <span class="ml-1">
-                    {{ content }}
-                </span>
+                {{ content }}
             </span>
         </span>
     </span>

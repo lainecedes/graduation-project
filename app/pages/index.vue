@@ -21,14 +21,8 @@ onMounted(async () => {
 </script>
 
 <template>
-    <main class="min-h-screen flex items-center justify-center px-4 ">
+    <main class="min-h-screen bg-background flex items-center justify-center px-4 ">
         <section class="relative w-full max-w-xl text-center space-y-6">
-            <img
-                src="/characters/burglar.svg"
-                alt=""
-                class="absolute right-[-10%] top-[-1rem] w-[70%] h-auto pointer-events-none opacity-30 -z-20"
-            />
-
             <!-- Locky boven titel -->
             <div
                 v-if="lockySvg"
@@ -38,7 +32,7 @@ onMounted(async () => {
                 <div class="locky-svg" v-html="lockySvg" />
             </div>
 
-            <h1 class="pt-10 text-5xl text-primary font-heading">
+            <h1 class="text-5xl font-bold text-primary font-heading">
                 De Digitale Schatkist
             </h1>
 

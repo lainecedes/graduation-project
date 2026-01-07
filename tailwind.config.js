@@ -13,26 +13,28 @@ module.exports = {
                 mono: ['"Space Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
             },
             colors: {
-                primary: '#5B5FFF',
-                'primary-hover': '#4A4BF5',
-                'primary-focus': '#7073FF',
+                primary: '#4F52E6',
+                'primary-hover': '#4547D6',
+                'primary-focus': '#5E61EC',
                 'primary-active': '#3B3BDB',
                 'primary-100': '#DADAFE',
 
                 background: '#F7F7FB',
+                'background-alt': '#EFEFFF',
                 'background-dark': '#0F0F1A',
 
-                'text-main': '#111111',
+                'text-main': '#111111',       // on light bg
+                'text-muted': '#5B5F7A',
+                'text-on-primary': '#FFFFFF',
                 'text-on-dark': '#EAEAF6',
 
-                // refined white button set
-                'btn-white': '#FFFFFF',
-                'btn-white-hover': '#F8F8FF',
-                'btn-white-active': '#F0F1FF',
+                success: '#00BE0A',
 
-                'btn-white-border': '#E5E7FF',
-                'btn-white-border-hover': '#D4D6FF',
-                'btn-white-border-active': '#C1C4FF',
+                danger: '#E5484D',
+                'danger-bg': '#FDEAEA',
+                'danger-hover': '#D63E44',
+                'danger-active': '#B9373B',
+                'danger-shadow': '#9D1C1C',
             }
         },
     },

@@ -9,6 +9,7 @@ export default defineNuxtConfig({
             },
         },
     },
+    ssr: true,
     future: {
         compatibilityVersion: 4,
     },

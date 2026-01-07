@@ -1,5 +1,7 @@
 <!-- components/ui/BaseButton.vue -->
 <script setup lang="ts">
+defineOptions({ inheritAttrs: false })
+
 const props = withDefaults(
     defineProps<{
         variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'link'
@@ -25,37 +27,37 @@ const baseClasses =
     'transition-[transform,background-color,border-color,color,box-shadow] duration-200 ease-out'
 
 const disabledClasses =
-    'bg-[#C7C7C7] text-[#555] border-none cursor-not-allowed translate-y-0 !shadow-none ' +
+    'bg-[#C7C7C7] text-[#473a55] border-none cursor-not-allowed translate-y-0 !shadow-none ' +
     'hover:bg-[#C7C7C7] active:bg-[#C7C7C7]'
 
 const variantClasses: Record<string, string> = {
     primary: `
-      bg-primary text-white
-      hover:bg-primary-hover active:bg-primary-active
+    bg-primary text-white
+    hover:bg-primary-hover active:bg-primary-active
   `,
     secondary: `
-      bg-white text-text-main border-[0.1rem] border-[#3B3BDB]
-      hover:bg-primary-100
+    bg-white text-primary border-[0.1rem] border-[#3B3BDB]
+    hover:bg-primary-100
   `,
     outline: `
-      border border-text-main text-text-main
-      hover:bg-primary-100
+    border border-text-main text-text-main
+    hover:bg-primary-100
   `,
     danger: `
-      bg-red-500 text-white
-      hover:bg-red-600 active:bg-red-700
+    bg-red-500 text-text-main
+    hover:bg-red-600 active:bg-red-700
   `,
     link: `
-      bg-transparent text-primary p-0 h-auto
+    bg-transparent text-primary p-0 h-auto
   `,
 }
 
 const shadowClasses: Record<string, string> = {
-    primary: 'bg-[#3B3BDB]',
-    secondary: 'bg-[#3B3BDB]',
-    outline: 'bg-[#A0A0A0]',
-    ghost: 'bg-[#C5C5C5]',
-    danger: 'bg-[#9D1C1C]',
+    primary: 'bg-primary-active',
+    secondary: 'bg-primary-active',
+    outline: 'bg-border-muted',
+    ghost: 'bg-border',
+    danger: 'bg-danger-shadow',
     link: 'bg-transparent',
 }
 
@@ -67,40 +69,35 @@ const sizeClasses: Record<string, string> = {
 </script>
 
 <template>
-    <div
-        :class="[
-      'relative inline-block',
-      fullWidth && 'w-full',
-    ]"
-    >
+    <div :class="['relative inline-block', fullWidth && 'w-full']">
         <!-- shadow weg bij disabled -->
         <div
             v-if="variant !== 'link'"
             :class="[
-            'absolute inset-x-0 top-1 h-full rounded-xl transition-opacity duration-200 ease-out',
-            shadowClasses[variant],
-            disabled ? 'opacity-0' : 'opacity-100',
-          ]"
+        'absolute inset-x-0 top-1 h-full rounded-xl transition-opacity duration-200 ease-out',
+        shadowClasses[variant],
+        disabled ? 'opacity-0' : 'opacity-100',
+      ]"
         />
 
         <button
+            v-bind="$attrs"
             :type="type"
             :disabled="disabled"
             :class="[
-        baseClasses,
-        sizeClasses[size],
-        fullWidth && 'w-full',
-
-        disabled
-          ? disabledClasses
-          : [
-              variantClasses[variant],
-              'relative z-10 transition-transform',
-              pressed
-                ? 'translate-y-1'
-                : '-translate-y-1 hover:translate-y-0 active:translate-y-1'
-            ]
-      ]"
+                        baseClasses,
+                        sizeClasses[size],
+                        fullWidth && 'w-full',
+                        disabled
+                        ? disabledClasses
+                        : [
+                        variantClasses[variant],
+                        'relative z-10 transition-transform',
+                        pressed
+                        ? 'translate-y-1'
+                        : '-translate-y-1 hover:translate-y-0 active:translate-y-1',
+                        ],
+                        ]"
         >
             <slot />
         </button>
