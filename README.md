@@ -74,3 +74,4 @@ De code is modulair opgezet met herbruikbare componenten en composables.
 ### Installeren
 ```bash
 npm install
+npm run dev
