@@ -1,75 +1,76 @@
-# Nuxt Minimal Starter
+# De Digitale Schatkist
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+De Digitale Schatkist is een interactieve webapplicatie die jongeren op een laagdrempelige manier laat nadenken over online privacy, data en digitale sporen.
 
-## Setup
+![Intro scherm](public/readme/logo-start.png)
 
-Make sure to install dependencies:
+De app gebruikt de metafoor van een **museum** waarin persoonlijke data-objecten worden tentoongesteld. Door te kijken, klikken en ontdekken ervaren gebruikers wat hun online keuzes kunnen zeggen over ze en hoe deze informatie door anderen kan worden bekeken of misbruikt.
 
+> Dit project is ontwikkeld als afstudeerproject en heeft een educatief doel.  
+> Er wordt **geen echte persoonlijke data** opgeslagen of verwerkt.
+
+---
+
+## Wat is dit project?
+
+De Digitale Schatkist is bedoeld als leer ervaring en geen les of quiz.  
+De gebruikers ervaren hier in de app in plaats van lezen of opdrachten maken.
+
+In de app:
+- kies je persoonlijke data-objecten
+- zie je hoe deze samen een profiel vormen als een collectie in je museum
+- ontdek je mogelijke risico’s
+- krijg je concrete tips om slimmer met data om te gaan
+
+![Intro scherm](public/readme/museum.jpeg)
+
+Alles gebeurt visueel en interactief, met begeleiding van een mascotte (Locky).
+
+---
+
+## Voor wie?
+
+- Jongeren van ongeveer **9–15 jaar**
+- Ouders, docenten en begeleiders
+- Iedereen die meer inzicht wil krijgen in online privacy
+
+De toon en inhoud passen zich aan op basis van leeftijd.
+
+---
+
+## Privacy & data
+
+Privacy-by-design staat centraal in dit project:
+
+- Geen accounts
+- Geen tracking
+- Geen database
+- Geen opslag van persoonlijke gegevens
+
+Alles wat je invult blijft lokaal in de browser met localStorage en en eventueel uitgebreid in een sessie storage.
+
+---
+
+## Technologie
+
+Deze applicatie is gebouwd met:
+
+- Nuxt 4
+- Vue 3 (Composition API)
+- TypeScript
+- Tailwind CSS
+- Vercel voor deployment
+
+De code is modulair opgezet met herbruikbare componenten en composables.
+
+---
+
+## Installatie
+
+### Vereisten
+- Node.js (LTS)
+- npm (required)
+
+### Installeren
 ```bash
-# npm
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
