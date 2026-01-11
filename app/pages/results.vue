@@ -7,7 +7,6 @@ import type { MuseumObjectId } from '~/components/museum/types/museumObjects'
 import { objectLabels } from '~/components/museum/types/museumObjects'
 
 import BaseButton from '~/components/ui/BaseButton.vue'
-import TooltipDictionary from '~/components/ui/TooltipDictionary.vue'
 import DialogHint from '~/components/ui/DialogHint.vue'
 import ResultDetailModal from '~/components/museum/ResultDetailModal.vue'
 import Locky from '~/components/mascotte/Locky.vue'

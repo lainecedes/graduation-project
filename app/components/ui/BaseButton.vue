@@ -1,4 +1,5 @@
 <!-- components/ui/BaseButton.vue -->
+<!-- components/ui/BaseButton.vue -->
 <script setup lang="ts">
 defineOptions({ inheritAttrs: false })
 
@@ -23,8 +24,16 @@ const props = withDefaults(
 
 const baseClasses =
     'inline-flex items-center justify-center rounded-xl font-medium ' +
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ' +
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ' +
     'transition-[transform,background-color,border-color,color,box-shadow] duration-200 ease-out'
+
+const focusRingClasses: Record<string, string> = {
+    primary: 'focus-visible:ring-primary',
+    secondary: 'focus-visible:ring-primary',
+    outline: 'focus-visible:ring-text-main',
+    danger: 'focus-visible:ring-danger',
+    link: 'focus-visible:ring-transparent',
+}
 
 const disabledClasses =
     'bg-[#C7C7C7] text-[#473a55] border-none cursor-not-allowed translate-y-0 !shadow-none ' +
@@ -85,19 +94,20 @@ const sizeClasses: Record<string, string> = {
             :type="type"
             :disabled="disabled"
             :class="[
-                        baseClasses,
-                        sizeClasses[size],
-                        fullWidth && 'w-full',
-                        disabled
-                        ? disabledClasses
-                        : [
-                        variantClasses[variant],
-                        'relative z-10 transition-transform',
-                        pressed
-                        ? 'translate-y-1'
-                        : '-translate-y-1 hover:translate-y-0 active:translate-y-1',
-                        ],
-                        ]"
+        baseClasses,
+        focusRingClasses[variant],
+        sizeClasses[size],
+        fullWidth && 'w-full',
+        disabled
+          ? disabledClasses
+          : [
+              variantClasses[variant],
+              'relative z-10 transition-transform',
+              pressed
+                ? 'translate-y-1'
+                : '-translate-y-1 hover:translate-y-0 active:translate-y-1',
+            ],
+      ]"
         >
             <slot />
         </button>
